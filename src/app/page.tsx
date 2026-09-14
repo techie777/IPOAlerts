@@ -1,69 +1,539 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { 
+  TrendingUp, 
+  Flame, 
+  Calendar, 
+  BellRing, 
+  CheckCircle2, 
+  ArrowRight, 
+  Search,
+  Sparkles
+} from 'lucide-react';
+import { getStoredIpos, formatCurrency } from '@/lib/ipoStore';
+import { IPO, IpoCategory } from '@/types/ipo';
+import IpoCard from '@/components/ipo/IpoCard';
+import CalendarSection from '@/components/calendar/CalendarSection';
+import BrokerCtaBanner from '@/components/monetization/BrokerCtaBanner';
+import NotificationModal from '@/components/notifications/NotificationModal';
+import PushNotificationBanner from '@/components/notifications/PushNotificationBanner';
+
+export default function HomePage() {
+  const [ipos, setIpos] = useState<IPO[]>([]);
+  const [activeTab, setActiveTab] = useState<'open' | 'upcoming' | 'closed'>('open');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | IpoCategory>('all');
+  const [searchFilter, setSearchFilter] = useState('');
+  const [notifModalOpen, setNotifModalOpen] = useState(false);
+
+  useEffect(() => {
+    setIpos(getStoredIpos());
+    const handleUpdate = () => setIpos(getStoredIpos());
+    window.addEventListener('ipoDataUpdated', handleUpdate);
+    return () => window.removeEventListener('ipoDataUpdated', handleUpdate);
+  }, []);
+
+  // Filter IPOs
+  const filteredIpos = ipos.filter((ipo) => {
+    const statusMatches =
+      activeTab === 'closed'
+        ? ipo.status === 'closed' || ipo.status === 'listed'
+        : ipo.status === activeTab;
+
+    const categoryMatches =
+      selectedCategory === 'all' || ipo.category === selectedCategory;
+
+    const searchMatches =
+      !searchFilter.trim() ||
+      ipo.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      ipo.symbol.toLowerCase().includes(searchFilter.toLowerCase());
+
+    return statusMatches && categoryMatches && searchMatches;
+  });
+
+  const liveCount = ipos.filter((i) => i.status === 'open').length;
+  const upcomingCount = ipos.filter((i) => i.status === 'upcoming').length;
+  const listedCount = ipos.filter((i) => i.status === 'listed' || i.status === 'closed').length;
+  const highestGmpIpo = [...ipos].sort((a, b) => b.currentListingGainPct - a.currentListingGainPct)[0];
+  const topMovers = [...ipos]
+    .filter((i) => i.currentGmp > 0)
+    .sort((a, b) => b.currentListingGainPct - a.currentListingGainPct)
+    .slice(0, 5);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8">
+      {/* Free Browser Push Notification Opt-In Banner */}
+      <PushNotificationBanner onOpenPreferences={() => setNotifModalOpen(true)} />
+      
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-b from-white via-indigo-50/25 to-white p-5 sm:p-8 lg:p-10 shadow-xs">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 border border-indigo-100 mb-3">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+            <span>Real-Time Indian Market Intelligence</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-snug">
+            Live IPO Grey Market Premium, Bidding & Allotment Alerts
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+            Track real-time GMP rates, Day-wise bidding multipliers, and receive free browser push alerts before the closing bell.
           </p>
+
+          {/* Action CTAs */}
+          <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <Link
+              href="/gmp"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-xs shadow-indigo-600/30 transition min-h-[44px]"
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span>Today&apos;s Live GMP List</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setNotifModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-slate-50 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-700 border border-slate-200 shadow-xs transition min-h-[44px]"
+            >
+              <BellRing className="h-4 w-4 text-indigo-600" />
+              <span>Get Free Push Alerts</span>
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* 4 Stat KPI Cards - Harmonized Clean Typographic Scale */}
+        <div className="mt-6 sm:mt-8 grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-5 sm:pt-6 border-t border-slate-200/80">
+          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Open for Bidding
+            </div>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-bold text-slate-900">{liveCount} Issues</span>
+              <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+            </div>
+            <div className="text-xs text-slate-400 mt-0.5">NSE & BSE Active</div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Top GMP Today
+            </div>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-bold text-emerald-600">
+                +{highestGmpIpo?.currentListingGainPct || 0}%
+              </span>
+              <span className="text-xs font-semibold text-slate-500 truncate max-w-[80px]">
+                {highestGmpIpo?.symbol}
+              </span>
+            </div>
+            <div className="text-xs text-slate-400 mt-0.5">Est. listing pop</div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Upcoming Issues
+            </div>
+            <div className="mt-1 text-xl sm:text-2xl font-bold text-amber-600">
+              {upcomingCount} Filed
+            </div>
+            <div className="text-xs text-slate-400 mt-0.5">Approved RHP/DRHP</div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Listed / Closed
+            </div>
+            <div className="mt-1 text-xl sm:text-2xl font-bold text-indigo-600">
+              {listedCount} Tracked
+            </div>
+            <div className="text-xs text-slate-400 mt-0.5">Historical gains logged</div>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Main Listings Section */}
+      <section className="space-y-4 sm:space-y-6">
+        
+        {/* Navigation Tabs and Category Filters */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+          
+          {/* Primary Status Tabs */}
+          <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 overflow-x-auto scrollbar-none">
+            <button
+              onClick={() => setActiveTab('open')}
+              className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === 'open'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
+              <span>Live Bidding</span>
+              <span className="rounded-full bg-indigo-50 px-1.5 py-0.2 text-[10px] text-indigo-700 font-extrabold">
+                {liveCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('upcoming')}
+              className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === 'upcoming'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Calendar className="h-3.5 w-3.5" />
+              <span>Upcoming</span>
+              <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
+                {upcomingCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('closed')}
+              className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === 'closed'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Allotment & Listed</span>
+              <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
+                {listedCount}
+              </span>
+            </button>
+          </div>
+
+          {/* Category Chips and Quick Filter Search */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center rounded-xl bg-slate-100 border border-slate-200 p-1 text-xs font-bold">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-3 py-1.5 rounded-lg transition ${
+                  selectedCategory === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setSelectedCategory('mainboard')}
+                className={`px-3 py-1.5 rounded-lg transition ${
+                  selectedCategory === 'mainboard' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                Mainboard
+              </button>
+              <button
+                onClick={() => setSelectedCategory('sme')}
+                className={`px-3 py-1.5 rounded-lg transition ${
+                  selectedCategory === 'sme' ? 'bg-white text-purple-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                SME
+              </button>
+            </div>
+
+            <div className="relative flex-1 sm:flex-initial">
+              <input
+                type="text"
+                placeholder="Filter by name..."
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                className="w-full sm:w-44 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Cards Grid */}
+        {filteredIpos.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredIpos.map((ipo) => (
+              <IpoCard key={ipo.id} ipo={ipo} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 sm:p-12 text-center text-slate-500">
+            <p className="text-sm font-semibold">No IPOs found matching the current filters.</p>
+            <button
+              onClick={() => {
+                setActiveTab('open');
+                setSelectedCategory('all');
+                setSearchFilter('');
+              }}
+              className="mt-3 text-xs font-bold text-indigo-600 hover:underline"
+            >
+              Reset all filters
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* Premium Top GMP Gainers Today Panel - Clean, Consistent Fintech Typography */}
+      <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-xs space-y-4 sm:space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-xs">
+              <Flame className="h-5 w-5 text-emerald-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                  Top Grey Market Premium (GMP) Gainers Today
+                </h2>
+                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 live-beacon" />
+                  Live
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                Highest estimated listing profit per application across active and upcoming issues
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/gmp"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 self-start sm:self-auto"
+          >
+            <span>View All GMP Rates</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {/* Mobile View (< 768px): Clean, Consistent-Font Cards */}
+        <div className="md:hidden space-y-3">
+          {topMovers.map((item, idx) => {
+            const profitPerLot = item.currentGmp * item.lotSize;
+            return (
+              <div
+                key={item.id}
+                className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-3 hover:border-indigo-300 transition"
+              >
+                {/* Header: Rank + Name + Category */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <span className={`shrink-0 flex h-6 w-6 items-center justify-center rounded-lg text-xs font-bold shadow-xs ${
+                      idx === 0 
+                        ? 'bg-amber-400 text-amber-950 font-bold' 
+                        : idx === 1 
+                        ? 'bg-slate-300 text-slate-900 font-bold' 
+                        : idx === 2 
+                        ? 'bg-orange-200 text-orange-950 font-bold' 
+                        : 'bg-indigo-50 text-indigo-700 font-bold'
+                    }`}>
+                      #{idx + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/ipo/${item.slug}`}
+                        className="font-bold text-base text-slate-900 hover:text-indigo-600 transition block truncate"
+                      >
+                        {item.name}
+                      </Link>
+                      <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                        <span className="font-mono font-semibold text-slate-700">{item.symbol}</span>
+                        <span>•</span>
+                        <span className={`uppercase text-[10px] px-2 py-0.5 rounded-md font-bold ${
+                          item.category === 'sme' 
+                            ? 'bg-purple-100 text-purple-700' 
+                            : 'bg-indigo-50 text-indigo-700'
+                        }`}>
+                          {item.category}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* GMP Pill */}
+                  <div className="text-right shrink-0">
+                    <span className="inline-flex items-center rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 shadow-xs">
+                      +{item.currentListingGainPct}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* 3-Metric Banner - Clean Uniform Text Size */}
+                <div className="grid grid-cols-3 gap-2 rounded-xl bg-white p-3 border border-slate-200/80 shadow-2xs text-center">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Issue Price
+                    </div>
+                    <div className="text-base font-bold text-slate-900 mt-0.5">
+                      ₹{item.priceBandMax || item.priceBandMin}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Lot: {item.lotSize} sh
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                      GMP Today
+                    </div>
+                    <div className="text-base font-bold text-emerald-600 mt-0.5">
+                      +₹{item.currentGmp}
+                    </div>
+                    <div className="text-xs text-emerald-700">
+                      per share
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Profit / Lot
+                    </div>
+                    <div className="text-base font-bold text-slate-900 mt-0.5">
+                      +{formatCurrency(profitPerLot)}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      1 application
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action CTA */}
+                <Link
+                  href={`/ipo/${item.slug}`}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-white hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 py-2 text-xs font-semibold text-slate-700 transition"
+                >
+                  <span>View Details & Bidding Status</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop View (>= 768px): Refined, Harmonious Table */}
+        <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200">
+          <table className="w-full text-left text-slate-800">
+            <thead className="bg-slate-50/90 uppercase text-xs tracking-wider text-slate-500 border-b border-slate-200 font-semibold">
+              <tr>
+                <th className="py-3.5 px-5 whitespace-nowrap">Rank & IPO Name</th>
+                <th className="py-3.5 px-5 whitespace-nowrap">Category & Lot</th>
+                <th className="py-3.5 px-5 whitespace-nowrap">Issue Price</th>
+                <th className="py-3.5 px-5 text-emerald-700 whitespace-nowrap">GMP Today</th>
+                <th className="py-3.5 px-5 whitespace-nowrap">Est. Gain %</th>
+                <th className="py-3.5 px-5 whitespace-nowrap">Est. Profit / Application</th>
+                <th className="py-3.5 px-5 text-right whitespace-nowrap">Analysis</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white text-sm">
+              {topMovers.map((item, idx) => {
+                const profitPerLot = item.currentGmp * item.lotSize;
+                return (
+                  <tr key={item.id} className="hover:bg-indigo-50/20 transition-colors group">
+                    {/* Rank & IPO Name */}
+                    <td className="py-3.5 px-5">
+                      <div className="flex items-center gap-3">
+                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold shadow-xs ${
+                          idx === 0 
+                            ? 'bg-amber-400 text-amber-950 font-bold' 
+                            : idx === 1 
+                            ? 'bg-slate-200 text-slate-800 font-bold' 
+                            : idx === 2 
+                            ? 'bg-orange-200 text-orange-950 font-bold' 
+                            : 'bg-slate-100 text-slate-600 font-semibold'
+                        }`}>
+                          #{idx + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <Link 
+                            href={`/ipo/${item.slug}`} 
+                            className="hover:text-indigo-600 transition text-sm font-bold text-slate-900 block tracking-tight group-hover:underline"
+                          >
+                            {item.name}
+                          </Link>
+                          <div className="text-xs font-mono text-slate-400 mt-0.5">
+                            NSE/BSE: {item.symbol}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Category & Lot */}
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <span className={`uppercase text-xs px-2.5 py-0.5 rounded-md font-semibold inline-block ${
+                        item.category === 'sme' 
+                          ? 'bg-purple-50 text-purple-700 border border-purple-200' 
+                          : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                      }`}>
+                        {item.category}
+                      </span>
+                      <div className="text-xs text-slate-500 mt-1">
+                        Lot: {item.lotSize} shares
+                      </div>
+                    </td>
+
+                    {/* Issue Price */}
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <div className="text-sm font-bold text-slate-800">
+                        ₹{item.priceBandMax || item.priceBandMin}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        per share
+                      </div>
+                    </td>
+
+                    {/* GMP Today */}
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <div className="text-base font-bold text-emerald-600">
+                        +₹{item.currentGmp}
+                      </div>
+                      <div className="text-xs text-emerald-700/80">
+                        estimated pop
+                      </div>
+                    </td>
+
+                    {/* Est. Listing Gain */}
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <span className="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 shadow-xs">
+                        +{item.currentListingGainPct}%
+                      </span>
+                    </td>
+
+                    {/* Profit / Lot */}
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <div className="font-bold text-slate-900 text-sm">
+                        +{formatCurrency(profitPerLot)}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        per 1 retail lot
+                      </div>
+                    </td>
+
+                    {/* Action */}
+                    <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                      <Link
+                        href={`/ipo/${item.slug}`}
+                        className="inline-flex items-center gap-1 rounded-lg bg-slate-900 hover:bg-indigo-600 text-white px-3.5 py-1.5 text-xs font-semibold transition shadow-xs"
+                      >
+                        <span>Analyze</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Calendar Section on the Homepage (Right above Broker Banner & Footer) */}
+      <section className="pt-2">
+        <CalendarSection ipos={ipos} limit={6} showViewAll={true} />
+      </section>
+
+      {/* Broker Apply Banner */}
+      <BrokerCtaBanner variant="full" />
+
+      {/* Notification Modal */}
+      {notifModalOpen && <NotificationModal onClose={() => setNotifModalOpen(false)} />}
     </div>
   );
 }

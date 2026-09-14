@@ -1,0 +1,97 @@
+{
+  "subscribers": [],
+  "sentAlerts": {
+    "ipo-1:open:2026-09-09": {
+      "eventKey": "ipo-1:open:2026-09-09",
+      "sentAt": "2026-09-14T08:33:54.184Z",
+      "ipoId": "ipo-1",
+      "eventType": "newIpo",
+      "title": "🔔 New IPO Open: Waaree Energies Limited"
+    },
+    "ipo-1:gmp_surge:75pct": {
+      "eventKey": "ipo-1:gmp_surge:75pct",
+      "sentAt": "2026-09-14T08:33:54.188Z",
+      "ipoId": "ipo-1",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: Waaree Energies Limited (+98.13%)"
+    },
+    "ipo-2:open:2026-09-08": {
+      "eventKey": "ipo-2:open:2026-09-08",
+      "sentAt": "2026-09-14T08:33:54.189Z",
+      "ipoId": "ipo-2",
+      "eventType": "newIpo",
+      "title": "🔔 New IPO Open: TechVera Cloud Solutions Ltd (SME)"
+    },
+    "ipo-2:gmp_surge:50pct": {
+      "eventKey": "ipo-2:gmp_surge:50pct",
+      "sentAt": "2026-09-14T08:33:54.191Z",
+      "ipoId": "ipo-2",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: TechVera Cloud Solutions Ltd (SME) (+71.18%)"
+    },
+    "ipo-3:price_band:1865-1960": {
+      "eventKey": "ipo-3:price_band:1865-1960",
+      "sentAt": "2026-09-14T08:33:54.192Z",
+      "ipoId": "ipo-3",
+      "eventType": "priceBand",
+      "title": "🏷️ Price Band Announced: Hyundai Motor India Ltd"
+    },
+    "ipo-4:allotment:2026-08-30": {
+      "eventKey": "ipo-4:allotment:2026-08-30",
+      "sentAt": "2026-09-14T08:33:54.193Z",
+      "ipoId": "ipo-4",
+      "eventType": "allotment",
+      "title": "🎉 Allotment Out: Premier Energies Ltd"
+    },
+    "ipo-4:gmp_surge:100pct": {
+      "eventKey": "ipo-4:gmp_surge:100pct",
+      "sentAt": "2026-09-14T08:33:54.194Z",
+      "ipoId": "ipo-4",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: Premier Energies Ltd (+108.89%)"
+    },
+    "ipo-5:allotment:2026-09-05": {
+      "eventKey": "ipo-5:allotment:2026-09-05",
+      "sentAt": "2026-09-14T08:33:54.195Z",
+      "ipoId": "ipo-5",
+      "eventType": "allotment",
+      "title": "🎉 Allotment Out: Bajaj Housing Finance Ltd"
+    },
+    "ipo-5:gmp_surge:100pct": {
+      "eventKey": "ipo-5:gmp_surge:100pct",
+      "sentAt": "2026-09-14T08:33:54.197Z",
+      "ipoId": "ipo-5",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: Bajaj Housing Finance Ltd (+114.29%)"
+    },
+    "ipo-6:allotment:2026-09-30": {
+      "eventKey": "ipo-6:allotment:2026-09-30",
+      "sentAt": "2026-09-14T08:33:54.200Z",
+      "ipoId": "ipo-6",
+      "eventType": "allotment",
+      "title": "🎉 Allotment Out: KRN Heat Exchanger & Refrigeration Ltd"
+    },
+    "ipo-6:gmp_surge:125pct": {
+      "eventKey": "ipo-6:gmp_surge:125pct",
+      "sentAt": "2026-09-14T08:33:54.202Z",
+      "ipoId": "ipo-6",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: KRN Heat Exchanger & Refrigeration Ltd (+125%)"
+    },
+    "ipo-7:price_band:78-82": {
+      "eventKey": "ipo-7:price_band:78-82",
+      "sentAt": "2026-09-14T08:33:54.203Z",
+      "ipoId": "ipo-7",
+      "eventType": "priceBand",
+      "title": "🏷️ Price Band Announced: Avalon BioPharma Sciences Ltd (SME)"
+    },
+    "ipo-7:gmp_surge:50pct": {
+      "eventKey": "ipo-7:gmp_surge:50pct",
+      "sentAt": "2026-09-14T08:33:54.205Z",
+      "ipoId": "ipo-7",
+      "eventType": "gmpSurge",
+      "title": "🚀 GMP Surge: Avalon BioPharma Sciences Ltd (SME) (+53.66%)"
+    }
+  },
+  "lastCronCheckAt": "2026-09-14T08:33:54.179Z"
+}
