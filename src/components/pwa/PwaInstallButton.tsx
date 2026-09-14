@@ -69,12 +69,12 @@ export default function PwaInstallButton({ variant = 'navbar', className = '' }:
     <button
       type="button"
       onClick={handleClick}
-      className={`hidden md:inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-emerald-50 hover:from-indigo-100 hover:to-emerald-100 text-slate-800 px-3 py-1.5 text-xs font-bold border border-indigo-200/80 shadow-xs transition group ${className}`}
-      title="Add IPO Alerts to your phone screen (No heavy download required)"
+      className={`hidden xl:inline-flex items-center gap-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 text-xs font-semibold transition cursor-pointer ${className}`}
+      title="Add IPO Alerts to your device screen (Instant install • <1MB)"
     >
-      <Download className="h-3.5 w-3.5 text-indigo-600 group-hover:scale-110 transition-transform" />
-      <span>Install App</span>
-      <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">
+      <Download className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+      <span>Install</span>
+      <span className="rounded bg-emerald-100 text-emerald-800 px-1 py-0.2 text-[9px] font-bold">
         &lt;1MB
       </span>
     </button>

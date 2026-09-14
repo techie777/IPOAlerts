@@ -33,6 +33,7 @@ import { useLanguage } from '@/context/LanguageContext';
 export default function Navbar() {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +61,19 @@ export default function Navbar() {
     loadUnread();
     window.addEventListener('notificationsUpdated', loadUnread);
 
-    // Click outside to close user dropdown
+    // Keyboard shortcut to focus search: press '/' or 'Ctrl+K'
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') ||
+        ((e.ctrlKey || e.metaKey) && e.key === 'k')
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Click outside to close user dropdown & search
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setUserDropdownOpen(false);
@@ -72,6 +85,7 @@ export default function Navbar() {
       window.removeEventListener('ipoDataUpdated', handleIpoUpdate);
       window.removeEventListener('userAuthUpdated', loadUser);
       window.removeEventListener('notificationsUpdated', loadUnread);
+      document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
@@ -93,16 +107,16 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-7 lg:gap-8">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
+          {/* Brand Logo & Navigation */}
+          <div className="flex items-center gap-6 lg:gap-8">
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-500 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
+                <span className="text-xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors font-heading">
                   IPO<span className="text-indigo-600">Alerts</span>
                 </span>
                 <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
@@ -112,7 +126,7 @@ export default function Navbar() {
             </Link>
 
             {/* Public Navigation */}
-            <nav className="hidden md:flex items-center gap-4 lg:gap-5 text-sm font-semibold text-slate-600">
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-semibold text-slate-600">
               <Link href="/" className="hover:text-indigo-600 transition-colors">
                 {t.allIpos}
               </Link>
@@ -124,10 +138,10 @@ export default function Navbar() {
                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
               </Link>
               <Link href="/subscription" className="hover:text-indigo-600 transition-colors">
-                {t.liveSubscription}
+                {t.subscription}
               </Link>
               <Link href="/allotment" className="hover:text-indigo-600 transition-colors">
-                {t.allotmentStage}
+                {t.allotment}
               </Link>
               <Link
                 href="/calendar"
@@ -136,23 +150,17 @@ export default function Navbar() {
                 <Calendar className="h-4 w-4 text-slate-400" />
                 <span>{t.calendar}</span>
               </Link>
-              <Link
-                href="/faqs"
-                className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
-              >
-                <BookOpen className="h-4 w-4 text-slate-400" />
-                <span>FAQs</span>
-              </Link>
             </nav>
           </div>
 
           {/* Search, Notifications & User Profile */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Search Input */}
-            <div className="relative hidden sm:block">
-              <div className="flex items-center rounded-full bg-slate-100/90 px-3.5 py-1.5 text-sm ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:bg-white transition-all w-48 lg:w-60">
-                <Search className="h-4 w-4 text-slate-400 mr-2 shrink-0" />
+            <div className="relative hidden md:block">
+              <div className="flex items-center rounded-full bg-slate-100/90 px-3 py-1.5 text-xs ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:bg-white transition-all w-36 lg:w-52">
+                <Search className="h-3.5 w-3.5 text-slate-400 mr-2 shrink-0" />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   placeholder="Search IPO, symbol..."
                   value={searchQuery}
@@ -160,16 +168,20 @@ export default function Navbar() {
                   onFocus={() => setSearchOpen(true)}
                   className="w-full bg-transparent text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
                 />
-                {searchQuery && (
+                {searchQuery ? (
                   <button onClick={() => setSearchQuery('')} className="text-slate-400 hover:text-slate-600">
                     <X className="h-3.5 w-3.5" />
                   </button>
+                ) : (
+                  <kbd className="hidden lg:inline-flex items-center rounded bg-slate-200/80 px-1 py-0.2 text-[9px] font-mono text-slate-500 font-bold">
+                    /
+                  </kbd>
                 )}
               </div>
 
               {/* Autocomplete Dropdown */}
               {searchOpen && searchQuery.trim() && (
-                <div className="absolute left-0 mt-2 w-80 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50">
+                <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1">
                     Matching IPOs ({filteredIpos.length})
                   </div>
@@ -211,11 +223,12 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Notification Page Link (Bell Icon with unread badge) */}
-            <Link
-              href="/notifications"
-              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-              title="View Market Notifications Feed"
+            {/* Notification & Alerts Center Trigger (Bell Icon with unread badge) */}
+            <button
+              type="button"
+              onClick={() => setNotifOpen(true)}
+              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+              title="Instant Alerts & Notification Settings"
             >
               <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
@@ -223,22 +236,12 @@ export default function Navbar() {
                   {unreadCount}
                 </span>
               )}
-            </Link>
-
-            {/* Free Instant Alert Customizer Modal Trigger */}
-            <button
-              onClick={() => setNotifOpen(true)}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200 transition"
-              title={t.alertSettings}
-            >
-              <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-              <span>{t.alertSettings}</span>
             </button>
 
             {/* Language Switcher (EN | हिंदी) */}
             <LanguageSwitcher />
 
-            {/* PWA 1-Tap Install Button */}
+            {/* PWA 1-Tap Install Button (Sleek Compact Pill on xl screens) */}
             <PwaInstallButton variant="navbar" />
 
 

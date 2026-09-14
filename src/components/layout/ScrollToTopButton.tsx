@@ -36,9 +36,9 @@ export default function ScrollToTopButton() {
       onClick={scrollToTop}
       aria-label={t.goToTop}
       title={t.goToTop}
-      className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/30 transition transform hover:-translate-y-1 active:scale-95 ring-2 ring-white/20 animate-in fade-in zoom-in duration-200 cursor-pointer"
+      className="fixed bottom-20 right-3 sm:bottom-6 sm:right-6 z-30 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl bg-slate-900/80 hover:bg-slate-900 text-white shadow-lg backdrop-blur-md border border-white/20 transition transform hover:-translate-y-0.5 active:scale-90 animate-in fade-in zoom-in duration-150 cursor-pointer"
     >
-      <ArrowUp className="h-5 w-5" />
+      <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
     </button>
   );
 }

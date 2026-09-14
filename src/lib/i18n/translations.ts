@@ -4,6 +4,8 @@ export interface Translations {
   // Navigation
   allIpos: string;
   liveGmp: string;
+  subscription: string;
+  allotment: string;
   calendar: string;
   alerts: string;
   myProfile: string;
@@ -99,6 +101,8 @@ export const translations: Record<Language, Translations> = {
   en: {
     allIpos: 'All IPOs',
     liveGmp: 'Live GMP',
+    subscription: 'Subscription',
+    allotment: 'Allotment',
     calendar: 'Calendar',
     alerts: 'Alerts',
     myProfile: 'My Profile',
@@ -185,6 +189,8 @@ export const translations: Record<Language, Translations> = {
   hi: {
     allIpos: 'सभी आईपीओ',
     liveGmp: 'लाइव GMP',
+    subscription: 'सब्सक्रिप्शन',
+    allotment: 'अलॉटमेंट',
     calendar: 'कैलेंडर',
     alerts: 'अलर्ट्स',
     myProfile: 'मेरी प्रोफाइल',

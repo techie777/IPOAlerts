@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import PublicLayoutShell from '@/components/layout/PublicLayoutShell';
 import LiveNotificationListener from '@/components/notifications/LiveNotificationListener';
@@ -7,6 +8,20 @@ import PwaRegistrar from '@/components/pwa/PwaRegistrar';
 import PwaInstallPrompt from '@/components/pwa/PwaInstallPrompt';
 import ScrollToTopButton from '@/components/layout/ScrollToTopButton';
 import { LanguageProvider } from '@/context/LanguageContext';
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-heading',
+  weight: ['500', '600', '700', '800', '900'],
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -48,8 +63,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="min-h-full flex flex-col antialiased bg-[#f8fafc] text-slate-900 pb-16 sm:pb-0">
+    <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable}`}>
+      <body className="min-h-full flex flex-col antialiased bg-[#f8fafc] text-slate-900 pb-16 sm:pb-0 font-sans">
         <LanguageProvider>
           <PwaRegistrar />
           <PwaInstallPrompt />
