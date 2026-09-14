@@ -16,6 +16,7 @@ import {
   LogOut,
   Sliders,
   ChevronDown,
+  Download,
 } from 'lucide-react';
 import { getStoredIpos } from '@/lib/ipoStore';
 import { IPO } from '@/types/ipo';
@@ -24,6 +25,7 @@ import { UserProfile } from '@/types/user';
 import { getUnreadNotificationsCount } from '@/lib/notificationsStore';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import AuthModal from '@/components/auth/AuthModal';
+import PwaInstallButton from '@/components/pwa/PwaInstallButton';
 
 export default function Navbar() {
   const router = useRouter();
@@ -229,6 +231,10 @@ export default function Navbar() {
               <span>Alert Settings</span>
             </button>
 
+            {/* PWA 1-Tap Install Button */}
+            <PwaInstallButton variant="navbar" />
+
+
             {/* User Profile & Auth Dropdown */}
             {user ? (
               <div className="relative" ref={dropdownRef}>
@@ -364,6 +370,29 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+
+            {/* 1-Tap PWA Mobile Add to Screen */}
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (window.deferredPwaPrompt) {
+                  window.deferredPwaPrompt.prompt();
+                } else {
+                  window.dispatchEvent(new CustomEvent('openPwaInstallModal'));
+                }
+              }}
+              className="flex items-center justify-between w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-50 to-emerald-50 hover:from-indigo-100 hover:to-emerald-100 text-indigo-950 font-bold border border-indigo-200/80 shadow-xs my-1 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Download className="h-4 w-4 text-indigo-600" />
+                <span className="text-xs">Add App to Phone Screen</span>
+              </div>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-800 px-1.5 py-0.5 rounded-md font-bold">
+                &lt;1MB
+              </span>
+            </button>
+
             {user ? (
               <Link
                 href="/profile?tab=notifications"

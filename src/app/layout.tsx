@@ -3,11 +3,14 @@ import './globals.css';
 import PublicLayoutShell from '@/components/layout/PublicLayoutShell';
 import LiveNotificationListener from '@/components/notifications/LiveNotificationListener';
 import FirebaseAnalyticsInit from '@/components/analytics/FirebaseAnalyticsInit';
+import PwaRegistrar from '@/components/pwa/PwaRegistrar';
+import PwaInstallPrompt from '@/components/pwa/PwaInstallPrompt';
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  themeColor: '#4f46e5',
 };
 
 export const metadata: Metadata = {
@@ -30,6 +33,11 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/icons/icon-192x192.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'IPO Alerts',
+  },
 };
 
 export default function RootLayout({
@@ -40,6 +48,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col antialiased bg-[#f8fafc] text-slate-900 pb-16 sm:pb-0">
+        <PwaRegistrar />
+        <PwaInstallPrompt />
         <FirebaseAnalyticsInit />
         <LiveNotificationListener />
         <PublicLayoutShell>
@@ -49,3 +59,4 @@ export default function RootLayout({
     </html>
   );
 }
+

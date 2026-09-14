@@ -19,6 +19,9 @@ import CalendarSection from '@/components/calendar/CalendarSection';
 import BrokerCtaBanner from '@/components/monetization/BrokerCtaBanner';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import PushNotificationBanner from '@/components/notifications/PushNotificationBanner';
+import PwaFeatureCard from '@/components/pwa/PwaFeatureCard';
+import PwaInstallButton from '@/components/pwa/PwaInstallButton';
+
 
 export default function HomePage() {
   const [ipos, setIpos] = useState<IPO[]>([]);
@@ -100,6 +103,9 @@ export default function HomePage() {
               <BellRing className="h-4 w-4 text-indigo-600" />
               <span>Get Free Push Alerts</span>
             </button>
+
+            {/* 1-Tap PWA Add to Screen Button */}
+            <PwaInstallButton variant="hero" />
           </div>
         </div>
 
@@ -152,6 +158,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Progressive Web App Install Value Proposition Card */}
+      <PwaFeatureCard />
 
       {/* Main Listings Section */}
       <section className="space-y-4 sm:space-y-6">
