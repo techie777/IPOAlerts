@@ -7,36 +7,108 @@ import {
   subscribeToLiveAlerts,
   LocalNotificationPayload,
 } from '@/lib/firebase/localNotificationNotifier';
-
+import { getClientMessaging } from '@/lib/firebase/clientApp';
 import { playNotificationSound } from '@/lib/audioNotifier';
-import { addAppNotification } from '@/lib/notificationsStore';
+import { addAppNotification, syncNotificationsFromServer } from '@/lib/notificationsStore';
 
 export default function LiveNotificationListener() {
   const [activeAlert, setActiveAlert] = useState<LocalNotificationPayload | null>(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeToLiveAlerts((payload) => {
-      setActiveAlert(payload);
-      playNotificationSound();
-
-      // Record in local notifications history
-      addAppNotification({
-        title: payload.title,
-        message: payload.body,
-        type: payload.category === 'sme' ? 'newIpo' : 'general',
-        category: (payload.category as 'mainboard' | 'sme') || 'general',
-        actionUrl: payload.url,
-      });
-
-      // Auto-dismiss in-app popup banner after 8 seconds
-      const timer = setTimeout(() => {
-        setActiveAlert(null);
-      }, 8000);
-      return () => clearTimeout(timer);
+    // 1. Cross-tab in-browser broadcast channel listener
+    const unsubscribeBroadcast = subscribeToLiveAlerts((payload) => {
+      triggerPopup(payload);
     });
 
-    return () => unsubscribe();
+    // 2. Firebase Cloud Messaging Foreground Push Listener (Active tab)
+    let unsubscribeFcm: (() => void) | null = null;
+    getClientMessaging()
+      .then(async (messaging) => {
+        if (!messaging) return;
+        try {
+          const { onMessage } = await import('firebase/messaging');
+          unsubscribeFcm = onMessage(messaging, (payload) => {
+            console.log('[FCM] Foreground push message received:', payload);
+            const title = payload.notification?.title || payload.data?.title || '🔔 Live IPO Alert';
+            const body =
+              payload.notification?.body ||
+              payload.data?.body ||
+              'Important IPO market update available.';
+            const url = payload.data?.url || (payload.notification as any)?.click_action || '/';
+            const category = payload.data?.category || 'general';
+
+            triggerPopup({
+              title,
+              body,
+              url,
+              category,
+            });
+          });
+        } catch (err) {
+          console.warn('Could not register onMessage listener:', err);
+        }
+      })
+      .catch((err) => console.warn('getClientMessaging error:', err));
+
+    // 3. Server Poll & Check on Load (ensures alerts pop on Home page even without push permission)
+    const checkServerNotifications = async () => {
+      try {
+        const res = await fetch('/api/notifications');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success && Array.isArray(data.notifications) && data.notifications.length > 0) {
+          const latest = data.notifications[0];
+          const notifAgeMs = Date.now() - new Date(latest.timestamp).getTime();
+          const isRecent = notifAgeMs < 10 * 60 * 1000; // Sent in the last 10 minutes
+          const alreadyPopped = sessionStorage.getItem('ipo_popped_' + latest.id);
+
+          if (isRecent && !alreadyPopped) {
+            sessionStorage.setItem('ipo_popped_' + latest.id, 'true');
+            triggerPopup({
+              title: latest.title,
+              body: latest.message,
+              url: latest.actionUrl || '/',
+              category: latest.category,
+            });
+            syncNotificationsFromServer().catch(() => {});
+          }
+        }
+      } catch (e) {
+        // Silently continue
+      }
+    };
+
+    // Run check on mount
+    checkServerNotifications();
+
+    // Periodic check every 15 seconds
+    const interval = setInterval(checkServerNotifications, 15000);
+
+    return () => {
+      unsubscribeBroadcast();
+      if (unsubscribeFcm) unsubscribeFcm();
+      clearInterval(interval);
+    };
   }, []);
+
+  const triggerPopup = (payload: LocalNotificationPayload) => {
+    setActiveAlert(payload);
+    playNotificationSound();
+
+    // Record in local user notifications feed
+    addAppNotification({
+      title: payload.title,
+      message: payload.body,
+      type: payload.category === 'sme' ? 'newIpo' : 'general',
+      category: (payload.category as 'mainboard' | 'sme') || 'general',
+      actionUrl: payload.url,
+    });
+
+    // Auto-dismiss in-app popup banner after 9 seconds
+    setTimeout(() => {
+      setActiveAlert(null);
+    }, 9000);
+  };
 
   if (!activeAlert) return null;
 

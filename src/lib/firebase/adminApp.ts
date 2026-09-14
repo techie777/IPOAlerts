@@ -64,3 +64,15 @@ export function getAdminMessaging(): Messaging | null {
     return null;
   }
 }
+
+export function getAdminFirestore() {
+  const app = getFirebaseAdminApp();
+  if (!app) return null;
+  try {
+    const { getFirestore } = require('firebase-admin/firestore');
+    return getFirestore(app);
+  } catch (err) {
+    console.error('Failed to get Admin Firestore instance:', err);
+    return null;
+  }
+}

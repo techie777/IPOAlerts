@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getAdminFirestore } from '@/lib/firebase/adminApp';
 
 export interface SubscriberPreferences {
   mainboardAlerts?: boolean;
@@ -45,6 +46,7 @@ const DB_FILE = path.join(DATA_DIR, 'subscribers.json');
 
 // In-memory fallback if disk operations are temporarily locked
 let memoryDb: DatabaseSchema | null = null;
+let subscribersFirestoreAvailable: boolean | null = null;
 
 function ensureDbFile(): DatabaseSchema {
   if (memoryDb) return memoryDb;
@@ -72,8 +74,7 @@ function ensureDbFile(): DatabaseSchema {
     memoryDb = parsed;
     return parsed;
   } catch (err) {
-    console.error('Error reading subscribers database file:', err);
-    memoryDb = { subscribers: [], sentAlerts: {} };
+    memoryDb = memoryDb || { subscribers: [], sentAlerts: {} };
     return memoryDb;
   }
 }
@@ -86,7 +87,7 @@ function writeDbFile(data: DatabaseSchema): void {
     }
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Error persisting subscribers database file:', err);
+    // Expected on serverless readonly disk
   }
 }
 
@@ -106,9 +107,12 @@ export async function saveSubscriber(
   const now = new Date().toISOString();
   const existingIdx = db.subscribers.findIndex((s) => s.token === token);
 
+  let subscriberToSave: SubscriberRecord;
+  let isCreated = false;
+
   if (existingIdx >= 0) {
     const existing = db.subscribers[existingIdx];
-    const updated: SubscriberRecord = {
+    subscriberToSave = {
       ...existing,
       updatedAt: now,
       preferences: {
@@ -119,31 +123,44 @@ export async function saveSubscriber(
       userAgent: extra?.userAgent || existing.userAgent,
       isDemo: extra?.isDemo ?? existing.isDemo,
     };
-    db.subscribers[existingIdx] = updated;
-    writeDbFile(db);
-    return { created: false, subscriber: updated };
+    db.subscribers[existingIdx] = subscriberToSave;
+  } else {
+    isCreated = true;
+    subscriberToSave = {
+      token,
+      createdAt: now,
+      updatedAt: now,
+      preferences: extra?.preferences || {
+        mainboardAlerts: true,
+        smeAlerts: true,
+        gmpSurgeAlerts: true,
+        allotmentOutAlerts: true,
+        closingDayAlerts: true,
+        newIpoAlerts: true,
+      },
+      topics: extra?.topics || ['all'],
+      userAgent: extra?.userAgent,
+      isDemo: extra?.isDemo || false,
+    };
+    db.subscribers.push(subscriberToSave);
   }
 
-  const newSubscriber: SubscriberRecord = {
-    token,
-    createdAt: now,
-    updatedAt: now,
-    preferences: extra?.preferences || {
-      mainboardAlerts: true,
-      smeAlerts: true,
-      gmpSurgeAlerts: true,
-      allotmentOutAlerts: true,
-      closingDayAlerts: true,
-      newIpoAlerts: true,
-    },
-    topics: extra?.topics || ['all'],
-    userAgent: extra?.userAgent,
-    isDemo: extra?.isDemo || false,
-  };
-
-  db.subscribers.push(newSubscriber);
   writeDbFile(db);
-  return { created: true, subscriber: newSubscriber };
+
+  // Sync to Firestore if available
+  try {
+    const firestore = getAdminFirestore();
+    if (firestore) {
+      // Clean document id (use encoded token or safe hash)
+      const docId = Buffer.from(token).toString('base64url').slice(0, 100);
+      await firestore.collection('fcm_subscribers').doc(docId).set(subscriberToSave);
+      subscribersFirestoreAvailable = true;
+    }
+  } catch {
+    subscribersFirestoreAvailable = false;
+  }
+
+  return { created: isCreated, subscriber: subscriberToSave };
 }
 
 /**
@@ -155,9 +172,17 @@ export async function removeSubscriber(token: string): Promise<boolean> {
   db.subscribers = db.subscribers.filter((s) => s.token !== token);
   if (db.subscribers.length !== initialCount) {
     writeDbFile(db);
-    return true;
   }
-  return false;
+
+  try {
+    const firestore = getAdminFirestore();
+    if (firestore) {
+      const docId = Buffer.from(token).toString('base64url').slice(0, 100);
+      await firestore.collection('fcm_subscribers').doc(docId).delete();
+    }
+  } catch {}
+
+  return db.subscribers.length !== initialCount;
 }
 
 /**
@@ -173,6 +198,19 @@ export async function removeSubscribers(tokens: string[]): Promise<number> {
   if (removed > 0) {
     writeDbFile(db);
   }
+
+  try {
+    const firestore = getAdminFirestore();
+    if (firestore) {
+      const batch = firestore.batch();
+      tokens.forEach((t) => {
+        const docId = Buffer.from(t).toString('base64url').slice(0, 100);
+        batch.delete(firestore.collection('fcm_subscribers').doc(docId));
+      });
+      await batch.commit();
+    }
+  } catch {}
+
   return removed;
 }
 
@@ -180,6 +218,23 @@ export async function removeSubscribers(tokens: string[]): Promise<number> {
  * Returns all active subscribers.
  */
 export async function getAllSubscribers(): Promise<SubscriberRecord[]> {
+  // 1. Try Firestore
+  if (subscribersFirestoreAvailable !== false) {
+    try {
+      const firestore = getAdminFirestore();
+      if (firestore) {
+        const snapshot = await firestore.collection('fcm_subscribers').limit(1000).get();
+        if (!snapshot.empty) {
+          subscribersFirestoreAvailable = true;
+          return snapshot.docs.map((d: any) => d.data() as SubscriberRecord);
+        }
+      }
+    } catch {
+      subscribersFirestoreAvailable = false;
+    }
+  }
+
+  // 2. Memory / file fallback
   const db = ensureDbFile();
   return [...db.subscribers];
 }

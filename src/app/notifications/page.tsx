@@ -20,6 +20,7 @@ import {
 import { AppNotification } from '@/types/user';
 import {
   getStoredNotifications,
+  syncNotificationsFromServer,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
@@ -35,7 +36,16 @@ export default function NotificationsPage() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    // 1. Instant local render
     setNotifications(getStoredNotifications());
+
+    // 2. Fetch fresh items from server
+    syncNotificationsFromServer().then((fresh) => {
+      if (fresh && fresh.length > 0) {
+        setNotifications(fresh);
+      }
+    });
+
     const handleUpdate = () => setNotifications(getStoredNotifications());
     window.addEventListener('notificationsUpdated', handleUpdate);
     return () => window.removeEventListener('notificationsUpdated', handleUpdate);

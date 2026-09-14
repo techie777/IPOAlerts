@@ -74,12 +74,16 @@ export async function syncNotificationsFromServer(): Promise<AppNotification[]> 
   if (typeof window === 'undefined') return INITIAL_NOTIFICATIONS;
 
   try {
-    const res = await fetch('/api/admin/notifications');
-    if (!res.ok) return getStoredNotifications();
-    const data = await res.json();
-    if (data.success && Array.isArray(data.notifications)) {
-      saveStoredNotifications(data.notifications);
-      return data.notifications;
+    let res = await fetch('/api/notifications');
+    if (!res.ok) {
+      res = await fetch('/api/admin/notifications');
+    }
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && Array.isArray(data.notifications)) {
+        saveStoredNotifications(data.notifications);
+        return data.notifications;
+      }
     }
   } catch (err) {
     console.warn('Could not sync notifications from server:', err);
