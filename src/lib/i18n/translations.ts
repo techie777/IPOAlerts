@@ -76,6 +76,12 @@ export interface Translations {
   topGmpToday: string;
   estListingPrice: string;
 
+  // Home Header
+  homeTitle: string;
+  homeSubtitle: string;
+  marketPulse: string;
+  openBidding: string;
+
   // Social & Community
   joinCommunity: string;
   communitySubtitle: string;
@@ -100,6 +106,11 @@ export const translations: Record<Language, Translations> = {
     installApp: 'Install App',
     installNow: 'Install Now',
     noHeavyFiles: 'No heavy download • 1-tap add to screen',
+
+    homeTitle: 'IPO Grey Market Premium (GMP) & Bidding',
+    homeSubtitle: 'Real-time GMP rates, retail allotment chances, and day-wise bidding trends across NSE & BSE',
+    marketPulse: 'NSE & BSE Live Market Pulse',
+    openBidding: 'Open Bidding',
 
     activeIpo: 'Active IPO',
     allotmentListed: 'Allotment & listed',
@@ -181,6 +192,11 @@ export const translations: Record<Language, Translations> = {
     installApp: 'ऐप इंस्टॉल करें',
     installNow: 'अभी इंस्टॉल करें',
     noHeavyFiles: 'बिना भारी डाउनलोड • 1-टैप में स्क्रीन पर जोड़ें',
+
+    homeTitle: 'आईपीओ ग्रे मार्केट प्रीमियम (GMP) और लाइव बोली',
+    homeSubtitle: 'एनएसई और बीएसई पर रियल-टाइम जीएमपी दरें, खुदरा आवंटन संभावना और दिन-वार बोली के आंकड़े',
+    marketPulse: 'NSE और BSE लाइव मार्केट पल्स',
+    openBidding: 'बोली चालू',
 
     activeIpo: 'चालू आईपीओ (Active)',
     allotmentListed: 'आवंटन और लिस्टेड',

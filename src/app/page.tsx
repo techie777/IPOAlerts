@@ -6,7 +6,6 @@ import {
   TrendingUp, 
   Flame, 
   Calendar, 
-  BellRing, 
   CheckCircle2, 
   ArrowRight, 
   Search,
@@ -19,8 +18,6 @@ import CalendarSection from '@/components/calendar/CalendarSection';
 import BrokerCtaBanner from '@/components/monetization/BrokerCtaBanner';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import PushNotificationBanner from '@/components/notifications/PushNotificationBanner';
-import PwaFeatureCard from '@/components/pwa/PwaFeatureCard';
-import PwaInstallButton from '@/components/pwa/PwaInstallButton';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function HomePage() {
@@ -72,102 +69,76 @@ export default function HomePage() {
     .slice(0, 5);
 
   return (
-    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8">
-      {/* Free Browser Push Notification Opt-In Banner */}
+    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3 sm:py-5 space-y-5 sm:space-y-6">
+      {/* Free Browser Push Notification Opt-In Banner (Ultra-compact, hidden once subscribed) */}
       <PushNotificationBanner onOpenPreferences={() => setNotifModalOpen(true)} />
       
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-b from-white via-indigo-50/25 to-white p-5 sm:p-8 lg:p-10 shadow-xs">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 border border-indigo-100 mb-3">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
-            <span>Real-Time Indian Market Intelligence</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-snug">
-            Live IPO Grey Market Premium, Bidding & Allotment Alerts
-          </h1>
-
-          <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-            Track real-time GMP rates, Day-wise bidding multipliers, and receive free browser push alerts before the closing bell.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <Link
-              href="/gmp"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-xs shadow-indigo-600/30 transition min-h-[44px]"
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span>Today&apos;s Live GMP List</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setNotifModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-slate-50 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-700 border border-slate-200 shadow-xs transition min-h-[44px]"
-            >
-              <BellRing className="h-4 w-4 text-indigo-600" />
-              <span>Get Free Push Alerts</span>
-            </button>
-
-            {/* 1-Tap PWA Add to Screen Button */}
-            <PwaInstallButton variant="hero" />
-          </div>
-        </div>
-
-        {/* 4 Stat KPI Cards - Harmonized Clean Typographic Scale */}
-        <div className="mt-6 sm:mt-8 grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-5 sm:pt-6 border-t border-slate-200/80">
-          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Open for Bidding
-            </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-bold text-slate-900">{liveCount} Issues</span>
+      {/* Sleek Modern Financial Header & Live Market Ticker */}
+      <section className="space-y-3 pt-1">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 mb-1.5">
               <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+              <span>{t.marketPulse}</span>
             </div>
-            <div className="text-xs text-slate-400 mt-0.5">NSE & BSE Active</div>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+              {t.homeTitle}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-2xl">
+              {t.homeSubtitle}
+            </p>
           </div>
 
-          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Top GMP Today
+          {/* Compact Market Pulse Stat Pills (Single Horizontal Bar) */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+            {/* Open Bidding Pill */}
+            <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">{t.openBidding}</div>
+                <div className="text-xs sm:text-sm font-extrabold text-slate-900">{liveCount} Issues</div>
+              </div>
             </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-bold text-emerald-600">
-                +{highestGmpIpo?.currentListingGainPct || 0}%
-              </span>
-              <span className="text-xs font-semibold text-slate-500 truncate max-w-[80px]">
-                {highestGmpIpo?.symbol}
-              </span>
-            </div>
-            <div className="text-xs text-slate-400 mt-0.5">Est. listing pop</div>
-          </div>
 
-          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Upcoming Issues
-            </div>
-            <div className="mt-1 text-xl sm:text-2xl font-bold text-amber-600">
-              {upcomingCount} Filed
-            </div>
-            <div className="text-xs text-slate-400 mt-0.5">Approved RHP/DRHP</div>
-          </div>
+            {/* Top GMP Today Pill */}
+            {highestGmpIpo && (
+              <Link
+                href={`/ipo/${highestGmpIpo.slug}`}
+                className="flex items-center gap-2.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 px-3.5 py-2 shadow-2xs shrink-0 hover:border-emerald-300 transition group"
+              >
+                <Flame className="h-4 w-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-emerald-800">{t.topGmpToday}</div>
+                  <div className="text-xs sm:text-sm font-extrabold text-emerald-700">
+                    +{highestGmpIpo.currentListingGainPct}%{' '}
+                    <span className="text-[11px] font-semibold text-slate-600 font-sans">
+                      ({highestGmpIpo.symbol})
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
 
-          <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-xs">
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Listed / Closed
+            {/* Upcoming Pill */}
+            <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
+              <Calendar className="h-4 w-4 text-amber-500" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">{t.upcoming}</div>
+                <div className="text-xs sm:text-sm font-extrabold text-amber-600">{upcomingCount} Filed</div>
+              </div>
             </div>
-            <div className="mt-1 text-xl sm:text-2xl font-bold text-indigo-600">
-              {listedCount} Tracked
+
+            {/* Total Tracked Pill */}
+            <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
+              <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">{t.all}</div>
+                <div className="text-xs sm:text-sm font-extrabold text-indigo-700">{ipos.length} Total</div>
+              </div>
             </div>
-            <div className="text-xs text-slate-400 mt-0.5">Historical gains logged</div>
           </div>
         </div>
       </section>
-
-      {/* Progressive Web App Install Value Proposition Card */}
-      <PwaFeatureCard />
 
       {/* Main Listings Section */}
       <section className="space-y-4 sm:space-y-6">

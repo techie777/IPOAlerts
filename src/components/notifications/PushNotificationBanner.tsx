@@ -2,23 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Bell,
   BellRing,
-  CheckCircle2,
   AlertCircle,
   Share,
-  SlidersHorizontal,
   Loader2,
   X,
   Sparkles,
 } from 'lucide-react';
 import {
   requestNotificationPermission,
-  unsubscribePushNotifications,
   getNotificationSupport,
   getStoredSubscriptionStatus,
   NotificationPermissionStatus,
 } from '@/lib/firebase/requestNotificationPermission';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   onOpenPreferences?: () => void;
@@ -26,6 +23,7 @@ interface Props {
 }
 
 export default function PushNotificationBanner({ onOpenPreferences, className = '' }: Props) {
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,6 +36,12 @@ export default function PushNotificationBanner({ onOpenPreferences, className = 
     setMounted(true);
     const { isSubscribed: savedSub } = getStoredSubscriptionStatus();
     setIsSubscribed(savedSub);
+
+    try {
+      if (localStorage.getItem('ipoalerts_notif_banner_dismissed') === '1') {
+        setBannerDismissed(true);
+      }
+    } catch (_) {}
 
     const support = getNotificationSupport();
     setStatus(support.permission);
@@ -59,9 +63,9 @@ export default function PushNotificationBanner({ onOpenPreferences, className = 
 
       if (result.success) {
         setIsSubscribed(true);
-        showToast('🔔 Push alerts activated successfully!');
+        showToast(language === 'hi' ? '🔔 अलर्ट सक्रिय हो गए!' : '🔔 Push alerts activated successfully!');
       } else if (result.status === 'denied') {
-        showToast('Notifications blocked — enable in browser settings.');
+        showToast(language === 'hi' ? 'अलर्ट्स ब्लॉक हैं — ब्राउज़र सेटिंग्स में चालू करें।' : 'Notifications blocked — enable in browser settings.');
       } else if (result.status === 'ios_pwa_required') {
         setShowIosTip(true);
       } else if (result.message) {
@@ -69,22 +73,7 @@ export default function PushNotificationBanner({ onOpenPreferences, className = 
       }
     } catch (err) {
       console.error(err);
-      showToast('Could not enable notifications.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUnsubscribe = async () => {
-    setIsLoading(true);
-    try {
-      const success = await unsubscribePushNotifications();
-      if (success) {
-        setIsSubscribed(false);
-        showToast('Notifications turned off.');
-      }
-    } catch (err) {
-      console.error(err);
+      showToast(language === 'hi' ? 'अलर्ट चालू नहीं हो सके।' : 'Could not enable notifications.');
     } finally {
       setIsLoading(false);
     }
@@ -92,19 +81,44 @@ export default function PushNotificationBanner({ onOpenPreferences, className = 
 
   if (!mounted) return null;
 
-  // If visitor denied permission, show a small discreet note instead of nagging
+  // Once subscribed or permission granted: Hide completely! Zero clutter!
+  if (isSubscribed || status === 'granted') {
+    return feedbackToast ? (
+      <div className="fixed top-4 right-4 z-50 rounded-2xl bg-slate-900 text-white text-xs px-4 py-2.5 shadow-xl flex items-center gap-2 animate-in fade-in">
+        <Sparkles className="h-4 w-4 text-emerald-400" />
+        <span>{feedbackToast}</span>
+      </div>
+    ) : null;
+  }
+
+  // If user dismissed: Don't show
+  if (bannerDismissed) return null;
+
+  // If visitor denied permission, show a small discreet note
   if (status === 'denied') {
     return (
       <div
-        className={`rounded-2xl border border-amber-200/80 bg-amber-50/70 p-3 text-xs text-amber-800 flex items-center justify-between gap-3 ${className}`}
+        className={`rounded-2xl border border-amber-200/80 bg-amber-50/70 p-2.5 text-xs text-amber-800 flex items-center justify-between gap-3 ${className}`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
-          <span>
-            <strong>Notifications blocked:</strong> Enable in your browser or site settings to
-            receive instant IPO bidding and allotment alerts.
+          <span className="truncate">
+            {language === 'hi'
+              ? 'अलर्ट ब्लॉक हैं: लाइव जीएमपी और आवंटन सूचना पाने के लिए ब्राउज़र सेटिंग्स में अनुमति दें।'
+              : 'Notifications blocked: Enable in site settings for instant GMP & allotment alerts.'}
           </span>
         </div>
+        <button
+          onClick={() => {
+            setBannerDismissed(true);
+            try {
+              localStorage.setItem('ipoalerts_notif_banner_dismissed', '1');
+            } catch (_) {}
+          }}
+          className="text-amber-600 hover:text-amber-900 p-1"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
     );
   }
@@ -113,163 +127,88 @@ export default function PushNotificationBanner({ onOpenPreferences, className = 
   if (showIosTip) {
     return (
       <div
-        className={`rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-sky-50 p-3.5 text-xs text-indigo-900 shadow-xs flex items-center justify-between gap-3 ${className}`}
+        className={`rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-sky-50 p-2.5 sm:p-3 text-xs text-indigo-900 shadow-2xs flex items-center justify-between gap-3 ${className}`}
       >
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white">
-            <Share className="h-3.5 w-3.5" />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white">
+            <Share className="h-3 w-3" />
           </div>
-          <p className="leading-snug">
-            <strong>iPhone User?</strong> Apple requires adding this site to your Home Screen: tap{' '}
-            <span className="inline-flex items-center font-bold">Share (⎋)</span> then{' '}
-            <span className="font-bold">&quot;Add to Home Screen&quot;</span> to receive free push alerts.
+          <p className="leading-snug truncate">
+            {language === 'hi' ? (
+              <span>
+                <strong>iPhone यूजर?</strong> शेयर (⎋) दबाएं फिर <strong>&quot;Add to Home Screen&quot;</strong> चुनें।
+              </span>
+            ) : (
+              <span>
+                <strong>iPhone User?</strong> Tap Share (⎋) then <strong>&quot;Add to Home Screen&quot;</strong> for push alerts.
+              </span>
+            )}
           </p>
         </div>
         <button
           onClick={() => setShowIosTip(false)}
-          className="text-slate-400 hover:text-slate-600 p-1"
-          aria-label="Dismiss iOS tip"
+          className="text-slate-400 hover:text-slate-600 p-1 shrink-0"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
     );
   }
 
-  if (bannerDismissed && !isSubscribed) {
-    return null;
-  }
-
+  // Ultra-Clean Modern 1-Line Banner for non-subscribed visitors
   return (
-    <aside
-      aria-label="IPO Push Notifications"
-      className={`relative overflow-hidden rounded-3xl border transition-all ${
-        isSubscribed
-          ? 'border-emerald-200 bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-white'
-          : 'border-indigo-200/90 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white shadow-md'
-      } p-4 sm:p-5 ${className}`}
+    <div
+      className={`flex items-center justify-between gap-3 rounded-2xl border border-indigo-100/90 bg-gradient-to-r from-indigo-50/70 via-white to-indigo-50/50 px-3.5 py-2 text-xs shadow-2xs transition-all ${className}`}
     >
-      {/* Toast Notification */}
-      {feedbackToast && (
-        <div className="absolute top-2 right-2 sm:right-4 z-20 rounded-xl bg-slate-900 text-white text-xs px-3.5 py-1.5 shadow-lg flex items-center gap-1.5 animate-fade-in">
-          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-          <span>{feedbackToast}</span>
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-2xs">
+          <BellRing className="h-3.5 w-3.5 animate-pulse" />
         </div>
-      )}
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Left: Icon & Headline */}
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-              isSubscribed
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-indigo-500/30 text-white border border-indigo-400/30'
-            }`}
-          >
-            {isSubscribed ? (
-              <CheckCircle2 className="h-6 w-6" />
-            ) : (
-              <BellRing className="h-6 w-6 animate-pulse" />
-            )}
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <h2
-                className={`text-sm sm:text-base font-bold ${
-                  isSubscribed ? 'text-slate-900' : 'text-white'
-                }`}
-              >
-                {isSubscribed
-                  ? '🔔 Notifications Active — You will receive instant IPO alerts'
-                  : '🔔 Notify me about new IPOs'}
-              </h2>
-              <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  isSubscribed
-                    ? 'bg-emerald-100 text-emerald-800'
-                    : 'bg-indigo-500/40 text-indigo-100'
-                }`}
-              >
-                100% Free
-              </span>
-            </div>
-            <p
-              className={`mt-0.5 text-xs ${
-                isSubscribed ? 'text-slate-600' : 'text-indigo-200'
-              }`}
-            >
-              {isSubscribed
-                ? 'Alerts configured for live bidding opening, price bands, GMP surges, and registrar allotments.'
-                : 'Get notified the moment a new IPO opens, price bands are announced, or allotment results are out.'}
-            </p>
-          </div>
-        </div>
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-          {isSubscribed ? (
-            <>
-              {onOpenPreferences && (
-                <button
-                  type="button"
-                  onClick={onOpenPreferences}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition"
-                >
-                  <SlidersHorizontal className="h-3.5 w-3.5 text-indigo-600" />
-                  <span>Customize</span>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={handleUnsubscribe}
-                disabled={isLoading}
-                className="inline-flex items-center gap-1 rounded-xl bg-slate-100 hover:bg-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <span>Turn off</span>
-                )}
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={handleSubscribe}
-                disabled={isLoading}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-indigo-50 text-indigo-900 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition active:scale-98"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
-                    <span>Enabling...</span>
-                  </>
-                ) : (
-                  <>
-                    <Bell className="h-4 w-4 text-indigo-600" />
-                    <span>🔔 Notify me about new IPOs</span>
-                  </>
-                )}
-              </button>
-
-              {!bannerDismissed && (
-                <button
-                  type="button"
-                  onClick={() => setBannerDismissed(true)}
-                  className="p-1.5 rounded-xl text-indigo-300 hover:text-white hover:bg-white/10 transition"
-                  title="Dismiss for this session"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </>
-          )}
+        <div className="min-w-0 flex items-center gap-2">
+          <p className="text-slate-800 font-bold truncate">
+            {language === 'hi'
+              ? '🔔 नए IPO, लाइव GMP और आवंटन अलर्ट तुरंत अपने फोन पर पाएं'
+              : '🔔 Never miss an IPO: Get real-time GMP surges & allotment alerts'}
+          </p>
+          <span className="hidden sm:inline-block rounded-md bg-emerald-100 text-emerald-800 px-1.5 py-0.2 text-[10px] font-extrabold shrink-0">
+            100% Free
+          </span>
         </div>
       </div>
-    </aside>
+
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          onClick={handleSubscribe}
+          disabled={isLoading}
+          className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 text-xs shadow-xs transition active:scale-95 cursor-pointer"
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-1">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>...</span>
+            </span>
+          ) : language === 'hi' ? (
+            'अलर्ट्स ऑन करें'
+          ) : (
+            'Enable Free'
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setBannerDismissed(true);
+            try {
+              localStorage.setItem('ipoalerts_notif_banner_dismissed', '1');
+            } catch (_) {}
+          }}
+          className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+          title="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   );
 }
