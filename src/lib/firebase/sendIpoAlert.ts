@@ -107,7 +107,7 @@ export async function sendIpoAlert(alert: IpoAlertPayload): Promise<SendIpoAlert
   }
 
   const destinationUrl = alert.url || '/';
-  const iconUrl = alert.icon || '/favicon.ico';
+  const iconUrl = alert.icon || '/icons/icon-192x192.png';
   const tag = alert.tag || `ipo-alert-${Date.now()}`;
 
   const deadTokens: string[] = [];
@@ -135,7 +135,7 @@ export async function sendIpoAlert(alert: IpoAlertPayload): Promise<SendIpoAlert
             title: alert.title,
             body: alert.body,
             icon: iconUrl,
-            badge: '/favicon.ico',
+            badge: '/icons/badge-72x72.png',
             tag: `${tag}-${Date.now()}`,
             requireInteraction: true,
             renotify: true,

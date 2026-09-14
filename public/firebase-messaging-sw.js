@@ -31,8 +31,8 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_FIREBASE_API_KEY') 
         payload.notification?.title || payload.data?.title || '🔔 IPO Alert';
       var notificationOptions = {
         body: payload.notification?.body || payload.data?.body || 'New IPO update available.',
-        icon: payload.notification?.icon || payload.data?.icon || '/favicon.ico',
-        badge: '/favicon.ico',
+        icon: payload.notification?.icon || payload.data?.icon || '/icons/icon-192x192.png',
+        badge: payload.notification?.badge || '/icons/badge-72x72.png',
         tag: payload.data?.tag || ('ipo-alert-' + Date.now()),
         renotify: true,
         requireInteraction: true,

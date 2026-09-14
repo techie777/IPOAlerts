@@ -28,8 +28,8 @@ export async function triggerBrowserNotification(payload: LocalNotificationPaylo
   const title = payload.title || '🔔 IPO Alert';
   const options: NotificationOptions = {
     body: payload.body,
-    icon: payload.icon || '/favicon.ico',
-    badge: '/favicon.ico',
+    icon: payload.icon || '/icons/icon-192x192.png',
+    badge: '/icons/badge-72x72.png',
     data: { url: payload.url || '/' },
   };
 
