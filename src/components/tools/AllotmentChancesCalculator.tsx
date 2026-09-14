@@ -15,12 +15,14 @@ import {
 } from 'lucide-react';
 import { IPO } from '@/types/ipo';
 import { formatCurrency } from '@/lib/ipoStore';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   ipo: IPO;
 }
 
 export default function AllotmentChancesCalculator({ ipo }: Props) {
+  const { t, language } = useLanguage();
   // Extract latest retail subscription from history or default to 31x (the classic benchmark)
   const latestSub =
     ipo.subscriptionHistory && ipo.subscriptionHistory.length > 0
@@ -84,23 +86,25 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 border border-indigo-100 mb-1.5">
             <Calculator className="h-3.5 w-3.5 text-indigo-600" />
-            <span>Retail Allotment Matrix Calculator</span>
+            <span>{t.calculatorTitle}</span>
           </div>
           <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-            Chances of Getting Allotment in {ipo.name}
+            {language === 'hi' ? `${ipo.name} में शेयर आवंटन संभावना` : `Chances of Getting Allotment in ${ipo.name}`}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Determine how many distinct family PAN applications you need to secure at least 1 lot.
+            {t.calculatorSubtitle}
           </p>
         </div>
 
         {/* Quick Rule Tag */}
         <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-3 text-right sm:max-w-xs shrink-0">
           <div className="text-[10px] font-bold uppercase text-emerald-800 tracking-wider">
-            SEBI Lottery Rule
+            {t.sebiLotteryRule}
           </div>
           <div className="text-xs font-extrabold text-emerald-900 mt-0.5">
-            1 in {Math.round(retailSub)} Retail Applicants Selected
+            {language === 'hi'
+              ? `${Math.round(retailSub)} में से 1 रिटेल आवेदक चुना जाएगा`
+              : `1 in ${Math.round(retailSub)} Retail Applicants Selected`}
           </div>
         </div>
       </div>
@@ -112,7 +116,7 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
           {/* Input 1: Retail Subscription Multiplier */}
           <div>
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
-              <label htmlFor="retailSubInput">Retail Subscription (x Times)</label>
+              <label htmlFor="retailSubInput">{t.retailSubTimes}</label>
               <span className="text-indigo-600 font-extrabold text-sm">{retailSub}x</span>
             </div>
             <input
@@ -147,9 +151,9 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
           {/* Input 2: Number of Family / Unique Applications */}
           <div>
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
-              <label htmlFor="numAppsInput">Applications (Different PANs)</label>
+              <label htmlFor="numAppsInput">{t.numApplications}</label>
               <span className="text-indigo-600 font-extrabold text-sm">
-                {numApplications} {numApplications === 1 ? 'App' : 'Apps'}
+                {numApplications} {language === 'hi' ? 'आवेदन' : (numApplications === 1 ? 'App' : 'Apps')}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -190,7 +194,9 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
                       : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  {p === recommendedApps ? `${p} (Target)` : `${p} App`}
+                  {p === recommendedApps
+                    ? `${p} (${language === 'hi' ? 'अनुशंसित' : 'Target'})`
+                    : `${p} ${language === 'hi' ? 'आवेदन' : 'App'}`}
                 </button>
               ))}
             </div>
@@ -198,7 +204,7 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
 
           {/* Capital Blocked */}
           <div className="pt-2 border-t border-slate-200 text-xs flex items-center justify-between text-slate-600">
-            <span>Capital Required:</span>
+            <span>{t.capitalRequired}:</span>
             <span className="font-extrabold text-slate-900 text-sm">
               {formatCurrency(totalInvestment)}
             </span>
@@ -211,13 +217,15 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
             {/* Metric 1: Single Application Odds */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
               <div className="text-[11px] font-bold uppercase text-slate-400">
-                1 Application Chance
+                {t.singleAppChance}
               </div>
               <div className="mt-1 text-2xl font-black text-slate-900">
                 {singleAppProb.toFixed(2)}%
               </div>
               <div className="text-xs text-slate-500 mt-0.5">
-                Exact odds: <strong>1 in {Math.round(retailSub)}</strong>
+                {language === 'hi'
+                  ? `सटीक अनुपात: ${Math.round(retailSub)} में से 1`
+                  : `Exact odds: 1 in ${Math.round(retailSub)}`}
               </div>
             </div>
 
@@ -225,15 +233,19 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
             <div className="rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50/70 to-white p-4">
               <div className="text-[11px] font-bold uppercase text-indigo-700 flex items-center gap-1">
                 <Sparkles className="h-3 w-3 text-indigo-600" />
-                <span>Chance with {numApplications} App{numApplications > 1 ? 's' : ''}</span>
+                <span>
+                  {language === 'hi'
+                    ? `${numApplications} आवेदनों के साथ संभावना`
+                    : `Chance with ${numApplications} App${numApplications > 1 ? 's' : ''}`}
+                </span>
               </div>
               <div className="mt-1 text-2xl font-black text-indigo-700">
                 {atLeastOneProb.toFixed(1)}%
               </div>
               <div className="text-xs text-indigo-900/80 mt-0.5">
                 {atLeastOneProb >= 50
-                  ? 'High probability of securing ≥1 lot'
-                  : 'Consider applying through more accounts'}
+                  ? (language === 'hi' ? 'कम से कम 1 लॉट मिलने की मजबूत संभावना' : 'High probability of securing ≥1 lot')
+                  : (language === 'hi' ? 'और अधिक डीमैट खातों से आवेदन करने पर विचार करें' : 'Consider applying through more accounts')}
               </div>
             </div>
           </div>
@@ -243,15 +255,33 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
             <div className="flex items-start gap-2.5">
               <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong>How the {retailSub}x Formula Works:</strong>
+                <strong>
+                  {language === 'hi'
+                    ? `${retailSub}x फॉर्मूला कैसे काम करता है:`
+                    : `How the ${retailSub}x Formula Works:`}
+                </strong>
                 <p className="mt-1 text-amber-800">
-                  If the retail portion is subscribed <strong>{retailSub}x</strong> times, only{' '}
-                  <strong>1 out of {Math.round(retailSub)} retail applicants</strong> will be allotted 1 minimum lot via the computer lottery.
-                  This indicates that to guarantee strong probability of getting at least 1 application selected, you should file{' '}
-                  <strong className="text-amber-950 font-extrabold underline decoration-amber-400">
-                    ~{recommendedApps} different applications
-                  </strong>{' '}
-                  across family members (each with a unique PAN).
+                  {language === 'hi' ? (
+                    <>
+                      यदि रिटेल कोटा <strong>{retailSub}x</strong> गुना सब्सक्राइब होता है, तो कंप्यूटर लॉटरी के माध्यम से केवल{' '}
+                      <strong>{Math.round(retailSub)} में से 1 रिटेल आवेदक</strong> को 1 लॉट आवंटित किया जाएगा।
+                      इसका सीधा अर्थ है कि कम से कम 1 आवेदन चुने जाने की उच्च संभावना सुनिश्चित करने के लिए, आपको परिवार के अलग-अलग सदस्यों के{' '}
+                      <strong className="text-amber-950 font-extrabold underline decoration-amber-400">
+                        लगभग {recommendedApps} अलग-अलग पैन (PAN)
+                      </strong>{' '}
+                      से आवेदन दाखिल करना चाहिए।
+                    </>
+                  ) : (
+                    <>
+                      If the retail portion is subscribed <strong>{retailSub}x</strong> times, only{' '}
+                      <strong>1 out of {Math.round(retailSub)} retail applicants</strong> will be allotted 1 minimum lot via the computer lottery.
+                      This indicates that to guarantee strong probability of getting at least 1 application selected, you should file{' '}
+                      <strong className="text-amber-950 font-extrabold underline decoration-amber-400">
+                        ~{recommendedApps} different applications
+                      </strong>{' '}
+                      across family members (each with a unique PAN).
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -261,7 +291,10 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
           <div className="flex items-center gap-2 text-[11px] text-slate-500 px-1">
             <ShieldAlert className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>
-              <strong>Important:</strong> Multiple bids under the same PAN will be rejected by the registrar. Always use separate PAN accounts.
+              <strong>{language === 'hi' ? 'महत्वपूर्ण:' : 'Important:'}</strong>{' '}
+              {language === 'hi'
+                ? 'एक ही पैन (PAN) से किए गए कई आवेदन रजिस्ट्रार द्वारा खारिज कर दिए जाते हैं। हमेशा अलग-अलग पैन खातों का उपयोग करें।'
+                : 'Multiple bids under the same PAN will be rejected by the registrar. Always use separate PAN accounts.'}
             </span>
           </div>
         </div>
@@ -272,20 +305,24 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
             <Layers className="h-3.5 w-3.5 text-indigo-600" />
-            <span>Allotment Odds Probability Matrix ({retailSub}x Retail Subscription)</span>
+            <span>
+              {t.oddsMatrix} ({retailSub}x {t.retail})
+            </span>
           </h4>
-          <span className="text-[11px] text-slate-400 font-medium">Indicative Benchmark</span>
+          <span className="text-[11px] text-slate-400 font-medium">
+            {language === 'hi' ? 'सांकेतिक मानक' : 'Indicative Benchmark'}
+          </span>
         </div>
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
               <tr>
-                <th className="py-2.5 px-3">Applications (PANs)</th>
-                <th className="py-2.5 px-3">Capital Blocked</th>
-                <th className="py-2.5 px-3">Allotment Probability</th>
-                <th className="py-2.5 px-3">Selection Odds</th>
-                <th className="py-2.5 px-3 text-right">Confidence Level</th>
+                <th className="py-2.5 px-3">{t.numApplications}</th>
+                <th className="py-2.5 px-3">{t.capitalRequired}</th>
+                <th className="py-2.5 px-3">{t.combinedChance}</th>
+                <th className="py-2.5 px-3">{language === 'hi' ? 'चयन अनुपात' : 'Selection Odds'}</th>
+                <th className="py-2.5 px-3 text-right">{t.confidenceLevel}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
@@ -310,10 +347,12 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-1.5">
                         {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-indigo-600" />}
-                        <span>{n} Application{n > 1 ? 's' : ''}</span>
+                        <span>
+                          {n} {language === 'hi' ? 'आवेदन' : n > 1 ? 'Applications' : 'Application'}
+                        </span>
                         {n === recommendedApps && (
                           <span className="rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-extrabold px-1.5 py-0.2">
-                            Match Rule
+                            {t.matchRule}
                           </span>
                         )}
                       </div>
@@ -346,12 +385,12 @@ export default function AllotmentChancesCalculator({ ipo }: Props) {
                         )}`}
                       >
                         {prob >= 80
-                          ? 'Very High'
+                          ? (language === 'hi' ? 'अत्यंत उच्च' : 'Very High')
                           : prob >= 50
-                          ? 'High (>50%)'
+                          ? (language === 'hi' ? 'उच्च (>50%)' : 'High (>50%)')
                           : prob >= 25
-                          ? 'Moderate'
-                          : 'Low'}
+                          ? (language === 'hi' ? 'मध्यम' : 'Moderate')
+                          : (language === 'hi' ? 'कम' : 'Low')}
                       </span>
                     </td>
                   </tr>

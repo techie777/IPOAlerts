@@ -21,9 +21,10 @@ import NotificationModal from '@/components/notifications/NotificationModal';
 import PushNotificationBanner from '@/components/notifications/PushNotificationBanner';
 import PwaFeatureCard from '@/components/pwa/PwaFeatureCard';
 import PwaInstallButton from '@/components/pwa/PwaInstallButton';
-
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HomePage() {
+  const { t } = useLanguage();
   const [ipos, setIpos] = useState<IPO[]>([]);
   const [activeTab, setActiveTab] = useState<'active' | 'allotment_listed' | 'upcoming' | 'all'>('active');
   const [selectedCategory, setSelectedCategory] = useState<'all' | IpoCategory>('all');
@@ -186,7 +187,7 @@ export default function HomePage() {
               }`}
             >
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
-              <span>Active IPO</span>
+              <span>{t.activeIpo}</span>
               <span className="rounded-full bg-indigo-50 px-1.5 py-0.2 text-[10px] text-indigo-700 font-extrabold">
                 {liveCount}
               </span>
@@ -202,7 +203,7 @@ export default function HomePage() {
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Allotment & listed</span>
+              <span>{t.allotmentListed}</span>
               <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
                 {listedCount}
               </span>
@@ -218,7 +219,7 @@ export default function HomePage() {
               }`}
             >
               <Calendar className="h-3.5 w-3.5" />
-              <span>Upcoming</span>
+              <span>{t.upcoming}</span>
               <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
                 {upcomingCount}
               </span>
@@ -233,7 +234,7 @@ export default function HomePage() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>All</span>
+              <span>{t.all}</span>
               <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
                 {ipos.length}
               </span>
@@ -249,7 +250,7 @@ export default function HomePage() {
                   selectedCategory === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                All
+                {t.all}
               </button>
               <button
                 onClick={() => setSelectedCategory('mainboard')}
@@ -257,7 +258,7 @@ export default function HomePage() {
                   selectedCategory === 'mainboard' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                Mainboard
+                {t.mainboard}
               </button>
               <button
                 onClick={() => setSelectedCategory('sme')}
@@ -265,14 +266,14 @@ export default function HomePage() {
                   selectedCategory === 'sme' ? 'bg-white text-purple-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                SME
+                {t.sme}
               </button>
             </div>
 
             <div className="relative flex-1 sm:flex-initial">
               <input
                 type="text"
-                placeholder="Filter by name..."
+                placeholder={t.filterByName}
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 className="w-full sm:w-44 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600"
@@ -337,108 +338,11 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Mobile View (< 768px): Clean, Consistent-Font Cards */}
-        <div className="md:hidden space-y-3">
-          {topMovers.map((item, idx) => {
-            const profitPerLot = item.currentGmp * item.lotSize;
-            return (
-              <div
-                key={item.id}
-                className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-3 hover:border-indigo-300 transition"
-              >
-                {/* Header: Rank + Name + Category */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2.5 min-w-0">
-                    <span className={`shrink-0 flex h-6 w-6 items-center justify-center rounded-lg text-xs font-bold shadow-xs ${
-                      idx === 0 
-                        ? 'bg-amber-400 text-amber-950 font-bold' 
-                        : idx === 1 
-                        ? 'bg-slate-300 text-slate-900 font-bold' 
-                        : idx === 2 
-                        ? 'bg-orange-200 text-orange-950 font-bold' 
-                        : 'bg-indigo-50 text-indigo-700 font-bold'
-                    }`}>
-                      #{idx + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <Link
-                        href={`/ipo/${item.slug}`}
-                        className="font-bold text-base text-slate-900 hover:text-indigo-600 transition block truncate"
-                      >
-                        {item.name}
-                      </Link>
-                      <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
-                        <span className="font-mono font-semibold text-slate-700">{item.symbol}</span>
-                        <span>•</span>
-                        <span className={`uppercase text-[10px] px-2 py-0.5 rounded-md font-bold ${
-                          item.category === 'sme' 
-                            ? 'bg-purple-100 text-purple-700' 
-                            : 'bg-indigo-50 text-indigo-700'
-                        }`}>
-                          {item.category}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* GMP Pill */}
-                  <div className="text-right shrink-0">
-                    <span className="inline-flex items-center rounded-xl bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200 shadow-xs">
-                      +{item.currentListingGainPct}%
-                    </span>
-                  </div>
-                </div>
-
-                {/* 3-Metric Banner - Clean Uniform Text Size */}
-                <div className="grid grid-cols-3 gap-2 rounded-xl bg-white p-3 border border-slate-200/80 shadow-2xs text-center">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Issue Price
-                    </div>
-                    <div className="text-base font-bold text-slate-900 mt-0.5">
-                      ₹{item.priceBandMax || item.priceBandMin}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                      Lot: {item.lotSize} sh
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
-                      GMP Today
-                    </div>
-                    <div className="text-base font-bold text-emerald-600 mt-0.5">
-                      +₹{item.currentGmp}
-                    </div>
-                    <div className="text-xs text-emerald-700">
-                      per share
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Profit / Lot
-                    </div>
-                    <div className="text-base font-bold text-slate-900 mt-0.5">
-                      +{formatCurrency(profitPerLot)}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                      1 application
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action CTA */}
-                <Link
-                  href={`/ipo/${item.slug}`}
-                  className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-white hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 py-2 text-xs font-semibold text-slate-700 transition"
-                >
-                  <span>View Details & Bidding Status</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            );
-          })}
+        {/* Universal Cards Grid for Top Gainers */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {topMovers.map((item, idx) => (
+            <IpoCard key={item.id} ipo={item} rank={idx + 1} />
+          ))}
         </div>
 
         {/* Desktop View (>= 768px): Refined, Harmonious Table */}

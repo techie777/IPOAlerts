@@ -1,8 +1,39 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { ShieldAlert, ExternalLink, Send, TrendingUp } from 'lucide-react';
+import { 
+  ShieldAlert, 
+  ExternalLink, 
+  TrendingUp, 
+  MessageCircle, 
+  Send, 
+  Sparkles, 
+  ArrowUpRight
+} from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+    </svg>
+  );
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </svg>
+  );
+}
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="mt-20 border-t border-slate-200 bg-white text-slate-500 text-xs">
       {/* Statutory SEBI Disclaimer */}
@@ -10,8 +41,107 @@ export default function Footer() {
         <div className="mx-auto max-w-5xl flex items-center justify-center gap-2 text-amber-900 font-medium text-xs">
           <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600" />
           <span>
-            <strong>Disclaimer:</strong> We are <u>NOT</u> a SEBI Registered Advisory. Grey Market Premium (GMP) numbers are unofficial street indications published for educational/informational purposes only.
+            <strong>Disclaimer:</strong> {t.disclaimerText}
           </span>
+        </div>
+      </div>
+
+      {/* Social Media Presence: WhatsApp, Telegram, Instagram, Facebook */}
+      <div className="border-b border-slate-200 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 py-8 px-4 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3 py-0.5 text-xs font-bold text-indigo-300 ring-1 ring-indigo-500/40 mb-2">
+                <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+                <span>Real-Time Market Network</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                {t.joinCommunity}
+              </h2>
+              <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-xl">
+                {t.communitySubtitle}
+              </p>
+            </div>
+
+            {/* Social Channels Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full md:w-auto shrink-0">
+              {/* WhatsApp */}
+              <a
+                href="https://whatsapp.com/channel"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 rounded-2xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/40 p-3 text-white transition hover:scale-102 group"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#25D366] text-white shadow-xs">
+                  <MessageCircle className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold truncate">WhatsApp</div>
+                  <div className="text-[10px] text-[#25D366] font-semibold flex items-center gap-0.5">
+                    <span>Join Channel</span>
+                    <ArrowUpRight className="h-2.5 w-2.5" />
+                  </div>
+                </div>
+              </a>
+
+              {/* Telegram */}
+              <a
+                href="https://t.me/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 rounded-2xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 p-3 text-white transition hover:scale-102 group"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#229ED9] text-white shadow-xs">
+                  <Send className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold truncate">Telegram</div>
+                  <div className="text-[10px] text-[#229ED9] font-semibold flex items-center gap-0.5">
+                    <span>50K+ Alerts</span>
+                    <ArrowUpRight className="h-2.5 w-2.5" />
+                  </div>
+                </div>
+              </a>
+
+              {/* Instagram */}
+              <a
+                href="https://instagram.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 rounded-2xl bg-pink-500/15 hover:bg-pink-500/25 border border-pink-500/40 p-3 text-white transition hover:scale-102 group"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 text-white shadow-xs">
+                  <InstagramIcon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold truncate">Instagram</div>
+                  <div className="text-[10px] text-pink-400 font-semibold flex items-center gap-0.5">
+                    <span>Daily Reels</span>
+                    <ArrowUpRight className="h-2.5 w-2.5" />
+                  </div>
+                </div>
+              </a>
+
+              {/* Facebook */}
+              <a
+                href="https://facebook.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2.5 rounded-2xl bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/40 p-3 text-white transition hover:scale-102 group"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1877F2] text-white shadow-xs">
+                  <FacebookIcon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold truncate">Facebook</div>
+                  <div className="text-[10px] text-[#4294ff] font-semibold flex items-center gap-0.5">
+                    <span>Follow Page</span>
+                    <ArrowUpRight className="h-2.5 w-2.5" />
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -31,17 +161,6 @@ export default function Footer() {
             <p className="text-slate-500 leading-relaxed max-w-sm text-xs">
               Real-time Indian IPO intelligence, live Grey Market Premium (GMP) tracker, subscription monitors, and automated allotment alerts.
             </p>
-            <div className="pt-1">
-              <a
-                href="https://t.me/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-cyan-50 px-3.5 py-1.5 font-bold text-cyan-700 hover:bg-cyan-100 border border-cyan-200 transition"
-              >
-                <Send className="h-3.5 w-3.5 text-cyan-600" />
-                <span>Join Telegram Alerts (50k+ Investors)</span>
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -52,42 +171,32 @@ export default function Footer() {
             <ul className="space-y-2 text-slate-600">
               <li>
                 <Link href="/" className="hover:text-indigo-600 transition">
-                  Upcoming IPOs 2026
+                  {t.upcoming} 2026
                 </Link>
               </li>
               <li>
                 <Link href="/gmp" className="hover:text-indigo-600 transition">
-                  Today&apos;s Live GMP
+                  {t.liveGmp}
                 </Link>
               </li>
               <li>
                 <Link href="/subscription" className="hover:text-indigo-600 transition">
-                  Live Subscription Status
+                  {t.liveSubscription}
                 </Link>
               </li>
               <li>
                 <Link href="/allotment" className="hover:text-indigo-600 transition">
-                  Allotment Status Check
+                  {t.allotmentListed}
                 </Link>
               </li>
               <li>
                 <Link href="/calendar" className="hover:text-indigo-600 transition">
-                  IPO Calendar
+                  {t.calendar}
                 </Link>
               </li>
               <li>
                 <Link href="/faqs" className="hover:text-indigo-600 transition">
                   Guides & FAQs
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-indigo-600 transition">
-                  About Intelligence Desk
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-indigo-600 transition">
-                  Contact Desk & Feedback
                 </Link>
               </li>
             </ul>

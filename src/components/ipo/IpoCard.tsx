@@ -8,19 +8,19 @@ import {
   ArrowRight,
   Flame, 
   Building2, 
-  Users,
-  Briefcase,
-  ShieldCheck,
-  Award
+  Users
 } from 'lucide-react';
 import { IPO } from '@/types/ipo';
 import { formatCurrency } from '@/lib/ipoStore';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Props {
   ipo: IPO;
+  rank?: number;
 }
 
-export default function IpoCard({ ipo }: Props) {
+export default function IpoCard({ ipo, rank }: Props) {
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function IpoCard({ ipo }: Props) {
       const diff = target - now;
 
       if (diff <= 0) {
-        return ipo.status === 'open' ? 'Closed' : 'Opening Soon';
+        return ipo.status === 'open' ? t.biddingClosed : t.openingSoon;
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -46,7 +46,7 @@ export default function IpoCard({ ipo }: Props) {
     calculateTimeLeft();
     const interval = setInterval(calculateTimeLeft, 60000);
     return () => clearInterval(interval);
-  }, [ipo]);
+  }, [ipo, t]);
 
   const capPrice = ipo.priceBandMax || ipo.priceBandMin;
   const lotProfit = ipo.currentGmp * ipo.lotSize;
@@ -104,25 +104,25 @@ export default function IpoCard({ ipo }: Props) {
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 live-beacon" />
-            Live Bidding
+            {t.liveBidding}
           </span>
         );
       case 'upcoming':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 border border-amber-200">
-            Upcoming
+            {t.upcoming}
           </span>
         );
       case 'closed':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-bold text-purple-700 border border-purple-200">
-            Allotment Out
+            {t.allotmentStage}
           </span>
         );
       case 'listed':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200">
-            Listed
+            {t.listed}
           </span>
         );
     }
@@ -131,19 +131,33 @@ export default function IpoCard({ ipo }: Props) {
   return (
     <div className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10">
       <div>
-        {/* Top Header: Logo, Name, Category & Gain Pill */}
+        {/* Top Header: Logo, Rank, Name, Category & Gain Pill */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0 flex-1">
-            {/* 1. IPO Logo */}
+            {/* Rank Badge or Logo */}
             <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-tr from-indigo-50 via-slate-50 to-indigo-100/80 border border-slate-200 text-2xl shadow-xs group-hover:scale-105 transition-transform">
-              {ipo.logoUrl ? (
+              {rank !== undefined ? (
+                <span
+                  className={`text-sm font-extrabold ${
+                    rank === 1
+                      ? 'text-amber-600'
+                      : rank === 2
+                      ? 'text-slate-600'
+                      : rank === 3
+                      ? 'text-amber-800'
+                      : 'text-indigo-600'
+                  }`}
+                >
+                  #{rank}
+                </span>
+              ) : ipo.logoUrl ? (
                 <span>{ipo.logoUrl}</span>
               ) : (
                 <Building2 className="h-6 w-6 text-indigo-600" />
               )}
             </div>
 
-            {/* 2. IPO Name & Meta */}
+            {/* IPO Name & Meta */}
             <div className="min-w-0 flex-1">
               <Link href={`/ipo/${ipo.slug}`} className="hover:underline">
                 <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
@@ -161,11 +175,11 @@ export default function IpoCard({ ipo }: Props) {
                       : 'bg-indigo-50 text-indigo-700'
                   }`}
                 >
-                  {ipo.category}
+                  {ipo.category === 'sme' ? t.sme : t.mainboard}
                 </span>
                 {ipo.hot && (
                   <span className="inline-flex items-center gap-0.5 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-800">
-                    <Flame className="h-3 w-3 text-amber-600" /> HOT
+                    <Flame className="h-3 w-3 text-amber-600" /> {t.hot}
                   </span>
                 )}
               </div>
@@ -182,10 +196,10 @@ export default function IpoCard({ ipo }: Props) {
           </div>
         </div>
 
-        {/* 3. IPO Start Date & End Date Row */}
+        {/* IPO Start Date & End Date Row */}
         <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50/80 px-3 py-1.5 text-xs text-slate-600 border border-slate-100">
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="text-slate-400 font-semibold text-[11px]">Offer Date:</span>
+            <span className="text-slate-400 font-semibold text-[11px]">{t.offerDate}:</span>
             <span className="font-bold text-slate-800">
               {formatDate(ipo.openDate)} to {formatDate(ipo.closeDate)}
             </span>
@@ -199,12 +213,12 @@ export default function IpoCard({ ipo }: Props) {
           )}
         </div>
 
-        {/* 4, 5, 6. Issue Price, GMP, Lot Size & Profit Highlights Box */}
+        {/* Issue Price, GMP, Lot Size & Profit Highlights Box */}
         <div className="mt-3 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-2.5 text-center shadow-2xs">
           {/* Issue Price */}
           <div className="px-1.5">
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Issue Price
+              {t.issuePrice}
             </div>
             <div className="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900">
               ₹{capPrice}
@@ -217,45 +231,45 @@ export default function IpoCard({ ipo }: Props) {
           {/* GMP Today */}
           <div className="px-1.5">
             <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-              GMP Today
+              {t.gmpToday}
             </div>
             <div className="mt-0.5 text-sm sm:text-base font-extrabold text-emerald-600">
               {isGain ? `+₹${ipo.currentGmp}` : `-₹${Math.abs(ipo.currentGmp)}`}
             </div>
             <div className="text-[10px] text-emerald-800 font-medium">
-              per share
+              {t.perShare}
             </div>
           </div>
 
           {/* Profit / Lot */}
           <div className="px-1.5">
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Profit / Lot
+              {t.profitLot}
             </div>
             <div className="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900">
               +{formatCurrency(lotProfit)}
             </div>
             <div className="text-[10px] text-slate-500 font-medium">
-              1 application
+              {t.oneApplication}
             </div>
           </div>
         </div>
 
-        {/* 7. Retail, HNI, QIB, Employee Subscription Breakdown */}
+        {/* Retail, HNI, QIB, Employee Subscription Breakdown */}
         <div className="mt-3 rounded-2xl border border-indigo-100/80 bg-gradient-to-r from-indigo-50/50 via-slate-50 to-indigo-50/30 p-2.5">
           <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 mb-1.5 px-1">
             <span className="flex items-center gap-1 text-indigo-700">
-              <Users className="h-3.5 w-3.5" /> Live Subscription
+              <Users className="h-3.5 w-3.5" /> {t.liveSubscription}
             </span>
             <span className="text-slate-500 font-semibold">
-              Total: <strong className="text-indigo-700 font-extrabold">{totalSub}</strong>
+              {t.total}: <strong className="text-indigo-700 font-extrabold">{totalSub}</strong>
             </span>
           </div>
 
           <div className="grid grid-cols-4 gap-1 text-center text-xs">
             {/* Retail */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">Retail</div>
+              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.retail}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {retailSub}
               </div>
@@ -263,7 +277,7 @@ export default function IpoCard({ ipo }: Props) {
 
             {/* HNI */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">HNI / NII</div>
+              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.hni}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {hniSub}
               </div>
@@ -271,7 +285,7 @@ export default function IpoCard({ ipo }: Props) {
 
             {/* QIB */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">QIB</div>
+              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.qib}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {qibSub}
               </div>
@@ -279,7 +293,7 @@ export default function IpoCard({ ipo }: Props) {
 
             {/* Employee */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">Employee</div>
+              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.employee}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {empSub}
               </div>
@@ -294,7 +308,7 @@ export default function IpoCard({ ipo }: Props) {
           href={`/ipo/${ipo.slug}`}
           className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 py-2.5 text-xs font-extrabold text-slate-700 shadow-2xs transition group-hover:border-indigo-300"
         >
-          <span>View Details & Bidding Status</span>
+          <span>{t.viewDetails}</span>
           <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>

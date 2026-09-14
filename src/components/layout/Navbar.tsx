@@ -26,10 +26,14 @@ import { getUnreadNotificationsCount } from '@/lib/notificationsStore';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import AuthModal from '@/components/auth/AuthModal';
 import PwaInstallButton from '@/components/pwa/PwaInstallButton';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
+import { useLanguage } from '@/context/LanguageContext';
+
 
 export default function Navbar() {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -110,27 +114,27 @@ export default function Navbar() {
             {/* Public Navigation */}
             <nav className="hidden md:flex items-center gap-4 lg:gap-5 text-sm font-semibold text-slate-600">
               <Link href="/" className="hover:text-indigo-600 transition-colors">
-                All IPOs
+                {t.allIpos}
               </Link>
               <Link
                 href="/gmp"
                 className="flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
               >
-                <span>Live GMP</span>
+                <span>{t.liveGmp}</span>
                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
               </Link>
               <Link href="/subscription" className="hover:text-indigo-600 transition-colors">
-                Subscription
+                {t.liveSubscription}
               </Link>
               <Link href="/allotment" className="hover:text-indigo-600 transition-colors">
-                Allotment
+                {t.allotmentStage}
               </Link>
               <Link
                 href="/calendar"
                 className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
               >
                 <Calendar className="h-4 w-4 text-slate-400" />
-                <span>Calendar</span>
+                <span>{t.calendar}</span>
               </Link>
               <Link
                 href="/faqs"
@@ -225,11 +229,14 @@ export default function Navbar() {
             <button
               onClick={() => setNotifOpen(true)}
               className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200 transition"
-              title="Customize Push Alerts"
+              title={t.alertSettings}
             >
               <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-              <span>Alert Settings</span>
+              <span>{t.alertSettings}</span>
             </button>
+
+            {/* Language Switcher (EN | हिंदी) */}
+            <LanguageSwitcher />
 
             {/* PWA 1-Tap Install Button */}
             <PwaInstallButton variant="navbar" />
@@ -327,36 +334,40 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile Slide-down Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 text-sm font-semibold text-slate-700">
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 text-sm font-semibold text-slate-700 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span className="text-xs text-slate-400">Language / भाषा:</span>
+              <LanguageSwitcher />
+            </div>
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1.5 hover:text-indigo-600"
             >
-              All IPOs
+              {t.allIpos}
             </Link>
             <Link
               href="/gmp"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1.5 hover:text-indigo-600"
             >
-              Live GMP Tracker
+              {t.liveGmp} Tracker
             </Link>
             <Link
               href="/subscription"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1.5 hover:text-indigo-600"
             >
-              Live Subscription
+              {t.liveSubscription}
             </Link>
             <Link
               href="/allotment"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1.5 hover:text-indigo-600"
             >
-              Allotment Status Direct Check
+              {t.allotmentStage}
             </Link>
             <Link
               href="/notifications"

@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { TrendingUp, Calendar, Bell, Flame, User } from 'lucide-react';
 import { getUnreadNotificationsCount } from '@/lib/notificationsStore';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const updateCount = () => setUnreadCount(getUnreadNotificationsCount());
@@ -18,11 +20,11 @@ export default function MobileBottomNav() {
   }, []);
 
   const navItems = [
-    { label: 'All IPOs', href: '/', icon: TrendingUp },
-    { label: 'Live GMP', href: '/gmp', icon: Flame },
-    { label: 'Calendar', href: '/calendar', icon: Calendar },
-    { label: 'Alerts', href: '/notifications', icon: Bell, badge: unreadCount },
-    { label: 'My Profile', href: '/profile', icon: User },
+    { label: t.allIpos, href: '/', icon: TrendingUp },
+    { label: t.liveGmp, href: '/gmp', icon: Flame },
+    { label: t.calendar, href: '/calendar', icon: Calendar },
+    { label: t.alerts, href: '/notifications', icon: Bell, badge: unreadCount },
+    { label: t.myProfile, href: '/profile', icon: User },
   ];
 
   return (

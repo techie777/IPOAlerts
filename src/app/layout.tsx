@@ -5,6 +5,8 @@ import LiveNotificationListener from '@/components/notifications/LiveNotificatio
 import FirebaseAnalyticsInit from '@/components/analytics/FirebaseAnalyticsInit';
 import PwaRegistrar from '@/components/pwa/PwaRegistrar';
 import PwaInstallPrompt from '@/components/pwa/PwaInstallPrompt';
+import ScrollToTopButton from '@/components/layout/ScrollToTopButton';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -48,13 +50,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col antialiased bg-[#f8fafc] text-slate-900 pb-16 sm:pb-0">
-        <PwaRegistrar />
-        <PwaInstallPrompt />
-        <FirebaseAnalyticsInit />
-        <LiveNotificationListener />
-        <PublicLayoutShell>
-          {children}
-        </PublicLayoutShell>
+        <LanguageProvider>
+          <PwaRegistrar />
+          <PwaInstallPrompt />
+          <ScrollToTopButton />
+          <FirebaseAnalyticsInit />
+          <LiveNotificationListener />
+          <PublicLayoutShell>
+            {children}
+          </PublicLayoutShell>
+        </LanguageProvider>
       </body>
     </html>
   );
