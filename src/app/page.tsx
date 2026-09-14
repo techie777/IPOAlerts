@@ -17,18 +17,18 @@ import IpoCard from '@/components/ipo/IpoCard';
 import CalendarSection from '@/components/calendar/CalendarSection';
 import BrokerCtaBanner from '@/components/monetization/BrokerCtaBanner';
 import NotificationModal from '@/components/notifications/NotificationModal';
-import PushNotificationBanner from '@/components/notifications/PushNotificationBanner';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const [ipos, setIpos] = useState<IPO[]>([]);
+  const [ipos, setIpos] = useState<IPO[]>(() => getStoredIpos());
   const [activeTab, setActiveTab] = useState<'active' | 'allotment_listed' | 'upcoming' | 'all'>('active');
   const [selectedCategory, setSelectedCategory] = useState<'all' | IpoCategory>('all');
   const [searchFilter, setSearchFilter] = useState('');
   const [notifModalOpen, setNotifModalOpen] = useState(false);
 
   useEffect(() => {
+    // Sync with localStorage if client has cached revisions
     setIpos(getStoredIpos());
     const handleUpdate = () => setIpos(getStoredIpos());
     window.addEventListener('ipoDataUpdated', handleUpdate);
@@ -70,9 +70,6 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3 sm:py-5 space-y-5 sm:space-y-6">
-      {/* Free Browser Push Notification Opt-In Banner (Ultra-compact, hidden once subscribed) */}
-      <PushNotificationBanner onOpenPreferences={() => setNotifModalOpen(true)} />
-      
       {/* Sleek Modern Financial Header & Live Market Ticker */}
       <section className="space-y-3 pt-1">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

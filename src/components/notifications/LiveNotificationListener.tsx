@@ -15,79 +15,92 @@ export default function LiveNotificationListener() {
   const [activeAlert, setActiveAlert] = useState<LocalNotificationPayload | null>(null);
 
   useEffect(() => {
-    // 1. Cross-tab in-browser broadcast channel listener
-    const unsubscribeBroadcast = subscribeToLiveAlerts((payload) => {
-      triggerPopup(payload);
-    });
-
-    // 2. Firebase Cloud Messaging Foreground Push Listener (Active tab)
+    let unsubscribeBroadcast: (() => void) | null = null;
     let unsubscribeFcm: (() => void) | null = null;
-    getClientMessaging()
-      .then(async (messaging) => {
-        if (!messaging) return;
-        try {
-          const { onMessage } = await import('firebase/messaging');
-          unsubscribeFcm = onMessage(messaging, (payload) => {
-            console.log('[FCM] Foreground push message received:', payload);
-            const title = payload.notification?.title || payload.data?.title || '🔔 Live IPO Alert';
-            const body =
-              payload.notification?.body ||
-              payload.data?.body ||
-              'Important IPO market update available.';
-            const url = payload.data?.url || (payload.notification as any)?.click_action || '/';
-            const category = payload.data?.category || 'general';
+    let interval: NodeJS.Timeout | null = null;
 
-            triggerPopup({
-              title,
-              body,
-              url,
-              category,
+    const startListeners = () => {
+      // 1. Cross-tab in-browser broadcast channel listener
+      unsubscribeBroadcast = subscribeToLiveAlerts((payload) => {
+        triggerPopup(payload);
+      });
+
+      // 2. Firebase Cloud Messaging Foreground Push Listener (Active tab)
+      getClientMessaging()
+        .then(async (messaging) => {
+          if (!messaging) return;
+          try {
+            const { onMessage } = await import('firebase/messaging');
+            unsubscribeFcm = onMessage(messaging, (payload) => {
+              console.log('[FCM] Foreground push message received:', payload);
+              const title = payload.notification?.title || payload.data?.title || '🔔 Live IPO Alert';
+              const body =
+                payload.notification?.body ||
+                payload.data?.body ||
+                'Important IPO market update available.';
+              const url = payload.data?.url || (payload.notification as any)?.click_action || '/';
+              const category = payload.data?.category || 'general';
+
+              triggerPopup({
+                title,
+                body,
+                url,
+                category,
+              });
             });
-          });
-        } catch (err) {
-          console.warn('Could not register onMessage listener:', err);
-        }
-      })
-      .catch((err) => console.warn('getClientMessaging error:', err));
-
-    // 3. Server Poll & Check on Load (ensures alerts pop on Home page even without push permission)
-    const checkServerNotifications = async () => {
-      try {
-        const res = await fetch('/api/notifications');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.success && Array.isArray(data.notifications) && data.notifications.length > 0) {
-          const latest = data.notifications[0];
-          const notifAgeMs = Date.now() - new Date(latest.timestamp).getTime();
-          const isRecent = notifAgeMs < 10 * 60 * 1000; // Sent in the last 10 minutes
-          const alreadyPopped = sessionStorage.getItem('ipo_popped_' + latest.id);
-
-          if (isRecent && !alreadyPopped) {
-            sessionStorage.setItem('ipo_popped_' + latest.id, 'true');
-            triggerPopup({
-              title: latest.title,
-              body: latest.message,
-              url: latest.actionUrl || '/',
-              category: latest.category,
-            });
-            syncNotificationsFromServer().catch(() => {});
+          } catch (err) {
+            console.warn('Could not register onMessage listener:', err);
           }
-        }
-      } catch (e) {
-        // Silently continue
-      }
+        })
+        .catch((err) => console.warn('getClientMessaging error:', err));
+
+      // 3. Server Poll & Check on Load
+      const checkServerNotifications = async () => {
+        try {
+          const res = await fetch('/api/notifications');
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.success && Array.isArray(data.notifications) && data.notifications.length > 0) {
+            const latest = data.notifications[0];
+            const notifAgeMs = Date.now() - new Date(latest.timestamp).getTime();
+            const isRecent = notifAgeMs < 10 * 60 * 1000;
+            const alreadyPopped = sessionStorage.getItem('ipo_popped_' + latest.id);
+
+            if (isRecent && !alreadyPopped) {
+              sessionStorage.setItem('ipo_popped_' + latest.id, 'true');
+              triggerPopup({
+                title: latest.title,
+                body: latest.message,
+                url: latest.actionUrl || '/',
+                category: latest.category,
+              });
+              syncNotificationsFromServer().catch(() => {});
+            }
+          }
+        } catch (_) {}
+      };
+
+      checkServerNotifications();
+      interval = setInterval(checkServerNotifications, 30000);
     };
 
-    // Run check on mount
-    checkServerNotifications();
+    let idleId: any = null;
+    let timerId: any = null;
 
-    // Periodic check every 15 seconds
-    const interval = setInterval(checkServerNotifications, 15000);
+    if ('requestIdleCallback' in window) {
+      idleId = (window as any).requestIdleCallback(startListeners, { timeout: 3500 });
+    } else {
+      timerId = setTimeout(startListeners, 2500);
+    }
 
     return () => {
-      unsubscribeBroadcast();
+      if (idleId && 'cancelIdleCallback' in window) {
+        (window as any).cancelIdleCallback(idleId);
+      }
+      if (timerId) clearTimeout(timerId);
+      if (unsubscribeBroadcast) unsubscribeBroadcast();
       if (unsubscribeFcm) unsubscribeFcm();
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
   }, []);
 

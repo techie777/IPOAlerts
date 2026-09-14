@@ -7,7 +7,7 @@ import { getStoredIpos } from '@/lib/ipoStore';
 import { IPO } from '@/types/ipo';
 
 export default function TickerStrip() {
-  const [ipos, setIpos] = useState<IPO[]>([]);
+  const [ipos, setIpos] = useState<IPO[]>(() => getStoredIpos());
 
   useEffect(() => {
     setIpos(getStoredIpos());

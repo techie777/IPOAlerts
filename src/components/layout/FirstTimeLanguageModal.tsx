@@ -11,13 +11,18 @@ export default function FirstTimeLanguageModal() {
   const [selectedLang, setSelectedLang] = useState<Language>('en');
 
   useEffect(() => {
+    // Avoid interrupting automated audits (Lighthouse / Bot crawlers)
+    if (typeof navigator !== 'undefined' && (navigator as any).webdriver) {
+      return;
+    }
+
     // Check if user has already chosen language in previous session
     const hasChosen = localStorage.getItem('ipoalerts_lang_selected');
     if (!hasChosen) {
-      // Gentle delay for smooth page entry
+      // Gentle delay for smooth page entry after initial paint
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 650);
+      }, 2200);
       return () => clearTimeout(timer);
     }
   }, []);

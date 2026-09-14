@@ -22,9 +22,9 @@ export default function PwaRegistrar() {
       window.dispatchEvent(new CustomEvent('pwaAppInstalled'));
     }
 
-    // 2. Automatically register PWA Service Worker on load
+    // 2. Register PWA Service Worker when browser is idle
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+      const registerSW = () => {
         navigator.serviceWorker
           .register('/firebase-messaging-sw.js', { scope: '/' })
           .then((registration) => {
@@ -33,7 +33,13 @@ export default function PwaRegistrar() {
           .catch((err) => {
             console.warn('[PWA] Service Worker registration failed:', err);
           });
-      });
+      };
+
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(registerSW, { timeout: 3500 });
+      } else {
+        setTimeout(registerSW, 2500);
+      }
     }
 
     // 3. Intercept and capture beforeinstallprompt (Android / Chrome / Edge)

@@ -7,7 +7,7 @@ import { IPO } from '@/types/ipo';
 import IpoCard from '@/components/ipo/IpoCard';
 
 export default function IpoCalendarPage() {
-  const [ipos, setIpos] = useState<IPO[]>([]);
+  const [ipos, setIpos] = useState<IPO[]>(() => getStoredIpos());
   const [filterType, setFilterType] = useState<'all' | 'open' | 'close' | 'allotment' | 'listing'>('all');
 
   useEffect(() => {
