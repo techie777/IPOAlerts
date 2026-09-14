@@ -158,7 +158,7 @@ export default function Navbar() {
             {/* Search Input */}
             <div className="relative hidden lg:block">
               <div className="flex items-center rounded-full bg-slate-100/90 px-3 py-1.5 text-xs ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:bg-white transition-all w-40 xl:w-52">
-                <Search className="h-3.5 w-3.5 text-slate-400 mr-2 shrink-0" />
+                <Search className="h-3.5 w-3.5 text-slate-500 mr-2 shrink-0" />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -166,10 +166,10 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchOpen(true)}
-                  className="w-full bg-transparent text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
+                  className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder-slate-500 focus:outline-none"
                 />
                 {searchQuery ? (
-                  <button onClick={() => setSearchQuery('')} className="text-slate-400 hover:text-slate-600">
+                  <button onClick={() => setSearchQuery('')} className="text-slate-500 hover:text-slate-700">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 ) : (

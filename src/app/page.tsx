@@ -118,10 +118,10 @@ export default function HomePage() {
 
             {/* Upcoming Pill */}
             <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
-              <Calendar className="h-4 w-4 text-amber-500" />
+              <Calendar className="h-4 w-4 text-amber-600" />
               <div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{t.upcoming}</div>
-                <div className="text-xs sm:text-sm font-extrabold text-amber-600">{upcomingCount} Filed</div>
+                <div className="text-[10px] uppercase font-bold text-slate-600">{t.upcoming}</div>
+                <div className="text-xs sm:text-sm font-extrabold text-amber-800">{upcomingCount} Filed</div>
               </div>
             </div>
 
@@ -129,7 +129,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
               <CheckCircle2 className="h-4 w-4 text-indigo-600" />
               <div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{t.all}</div>
+                <div className="text-[10px] uppercase font-bold text-slate-600">{t.all}</div>
                 <div className="text-xs sm:text-sm font-extrabold text-indigo-700">{ipos.length} Total</div>
               </div>
             </div>
@@ -214,24 +214,24 @@ export default function HomePage() {
             <div className="flex items-center rounded-xl bg-slate-100 border border-slate-200 p-1 text-xs font-bold">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  selectedCategory === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+                  selectedCategory === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 {t.all}
               </button>
               <button
                 onClick={() => setSelectedCategory('mainboard')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  selectedCategory === 'mainboard' ? 'bg-white text-indigo-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+                  selectedCategory === 'mainboard' ? 'bg-white text-indigo-700 shadow-xs' : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 {t.mainboard}
               </button>
               <button
                 onClick={() => setSelectedCategory('sme')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  selectedCategory === 'sme' ? 'bg-white text-purple-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+                  selectedCategory === 'sme' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-700 hover:text-slate-900'
                 }`}
               >
                 {t.sme}
@@ -244,7 +244,7 @@ export default function HomePage() {
                 placeholder={t.filterByName}
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full sm:w-44 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                className="w-full sm:w-44 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium"
               />
             </div>
           </div>
