@@ -171,7 +171,7 @@ export default function Footer() {
             <ul className="space-y-2 text-slate-600">
               <li>
                 <Link href="/" className="hover:text-indigo-600 transition">
-                  {t.upcoming} 2026
+                  {t.allIpos}
                 </Link>
               </li>
               <li>
@@ -198,6 +198,51 @@ export default function Footer() {
                 <Link href="/faqs" className="hover:text-indigo-600 transition">
                   Guides & FAQs
                 </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal & Compliance */}
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Trust & Legal
+            </h3>
+            <ul className="space-y-2 text-slate-600">
+              <li>
+                <Link href="/privacy-policy" className="hover:text-indigo-600 transition font-medium">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-of-use" className="hover:text-indigo-600 transition font-medium">
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link href="/disclaimer" className="hover:text-indigo-600 transition font-medium">
+                  Statutory Disclaimer
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-indigo-600 transition">
+                  About IPOAlerts
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-indigo-600 transition">
+                  Contact Support
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/sitemap.xml"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 hover:text-indigo-600 transition"
+                >
+                  <span>Sitemap (XML)</span>
+                  <ExternalLink className="h-3 w-3 text-slate-400" />
+                </a>
               </li>
             </ul>
           </div>
@@ -240,11 +285,6 @@ export default function Footer() {
                   <span>Bigshare Services</span>
                   <ExternalLink className="h-3 w-3 text-slate-400" />
                 </a>
-              </li>
-              <li>
-                <Link href="/disclaimer" className="hover:text-indigo-600 transition">
-                  Terms & Compliance
-                </Link>
               </li>
             </ul>
           </div>

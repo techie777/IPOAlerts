@@ -27,7 +27,6 @@ import { UserProfile } from '@/types/user';
 import { getUnreadNotificationsCount } from '@/lib/notificationsStore';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import AuthModal from '@/components/auth/AuthModal';
-import PwaInstallButton from '@/components/pwa/PwaInstallButton';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -127,8 +126,8 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* Public Navigation */}
-            <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-semibold text-slate-600">
+            {/* Public Navigation - Clean, Balanced Desktop Links */}
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-[13px] xl:text-sm font-semibold text-slate-600">
               <Link href="/" className="hover:text-indigo-600 transition-colors">
                 {t.allIpos}
               </Link>
@@ -137,7 +136,10 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
               >
                 <span>{t.liveGmp}</span>
-                <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
               </Link>
               <Link href="/subscription" className="hover:text-indigo-600 transition-colors">
                 {t.subscription}
@@ -145,21 +147,17 @@ export default function Navbar() {
               <Link href="/allotment" className="hover:text-indigo-600 transition-colors">
                 {t.allotment}
               </Link>
-              <Link
-                href="/calendar"
-                className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
-              >
-                <Calendar className="h-4 w-4 text-slate-400" />
-                <span>{t.calendar}</span>
+              <Link href="/calendar" className="hover:text-indigo-600 transition-colors">
+                {t.calendar}
               </Link>
             </nav>
           </div>
 
-          {/* Search, Notifications & User Profile */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Right Action Cluster: Search, Notification Bell, Language, Profile/SignIn */}
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="relative hidden md:block">
-              <div className="flex items-center rounded-full bg-slate-100/90 px-3 py-1.5 text-xs ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:bg-white transition-all w-36 lg:w-52">
+            <div className="relative hidden lg:block">
+              <div className="flex items-center rounded-full bg-slate-100/90 px-3 py-1.5 text-xs ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:bg-white transition-all w-40 xl:w-52">
                 <Search className="h-3.5 w-3.5 text-slate-400 mr-2 shrink-0" />
                 <input
                   ref={searchInputRef}
@@ -240,14 +238,11 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Language Switcher (Desktop only: hidden on mobile) */}
-            <LanguageSwitcher className="hidden md:inline-flex" />
+            {/* Language Switcher (Desktop only: hidden on mobile & tablets) */}
+            <LanguageSwitcher className="hidden lg:inline-flex" />
 
-            {/* PWA 1-Tap Install Button (Sleek Compact Pill on xl screens) */}
-            <PwaInstallButton variant="navbar" />
-
-            {/* Desktop User Profile & Auth Dropdown (Desktop only: hidden on mobile) */}
-            <div className="hidden md:block">
+            {/* Desktop User Profile & Auth Dropdown (Desktop only) */}
+            <div className="hidden lg:block">
               {user ? (
                 <div className="relative" ref={dropdownRef}>
                   <button
@@ -329,11 +324,11 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Unified Menu Trigger (Merged Profile & Menu Option) */}
+            {/* Mobile & Tablet Unified Menu Trigger */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden flex items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer active:scale-95"
+              className="lg:hidden flex items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer active:scale-95"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? (
@@ -349,9 +344,9 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Slide-down Navigation Menu */}
+        {/* Mobile & Tablet Slide-down Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3.5 space-y-3 text-sm font-semibold text-slate-700 shadow-xl animate-in fade-in slide-in-from-top-2">
+          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3.5 space-y-3 text-sm font-semibold text-slate-700 shadow-xl animate-in fade-in slide-in-from-top-2">
             {/* 1. Language Switcher inside Menu */}
             <div className="flex items-center justify-between py-2 px-3 rounded-2xl bg-slate-50 border border-slate-200/80">
               <div className="flex items-center gap-2">

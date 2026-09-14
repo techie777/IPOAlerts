@@ -122,64 +122,7 @@ export default function PwaInstallPrompt() {
   return (
     <>
       {/* ------------------------------------------------------------- */}
-      {/* ------------------------------------------------------------- */}
-      {/* Short & Simple 1-Line Ambient Install Bar (Mobile & Desktop)   */}
-      {/* ------------------------------------------------------------- */}
-      {!isDismissed && !modalOpen && (
-        <aside
-          aria-label="Install IPO Alerts Progressive Web App"
-          className="fixed bottom-16 sm:bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-2 duration-300"
-        >
-          <div className="flex items-center justify-between gap-2.5 rounded-2xl border border-indigo-500/40 bg-slate-900/95 px-3 py-2 text-white shadow-xl backdrop-blur-md ring-1 ring-white/10">
-            {/* App Icon + 1-Line Message */}
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 shadow-xs ring-1 ring-indigo-400/40">
-                <Image
-                  src="/icons/icon-192x192.png"
-                  alt="IPO Alerts"
-                  width={32}
-                  height={32}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-white truncate">
-                  <span className="truncate">Install IPO Alerts</span>
-                  <span className="shrink-0 text-[10px] font-semibold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded">
-                    &lt;1MB
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-300 truncate">
-                  No heavy download &bull; 1-tap add to screen
-                </p>
-              </div>
-            </div>
-
-            {/* Actions: Install Now + Close */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={handleInstallClick}
-                disabled={isInstalling}
-                className="inline-flex items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-emerald-500 hover:from-indigo-600 hover:to-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-500/25 transition active:scale-95 cursor-pointer"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span>Install Now</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDismiss}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
-                aria-label="Dismiss banner"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        </aside>
-      )}
+      {/* Floating unsolicited bar removed for maximum SEO, fast LCP, and zero screen clutter */}
 
       {/* ------------------------------------------------------------- */}
       {/* Full Feature Install Benefits Modal                            */}

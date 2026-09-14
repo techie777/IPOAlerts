@@ -14,12 +14,19 @@ import { IPO } from '@/types/ipo';
 import { formatCurrency } from '@/lib/ipoStore';
 import { useLanguage } from '@/context/LanguageContext';
 
+export interface CalendarEventBanner {
+  type: 'open' | 'close' | 'allotment' | 'listing';
+  date: string;
+  actionText: string;
+}
+
 interface Props {
   ipo: IPO;
   rank?: number;
+  calendarEvent?: CalendarEventBanner;
 }
 
-export default function IpoCard({ ipo, rank }: Props) {
+export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
   const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState<string>('');
 
@@ -131,6 +138,41 @@ export default function IpoCard({ ipo, rank }: Props) {
   return (
     <div className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10">
       <div>
+        {/* Calendar Event Schedule Banner (for calendar view) */}
+        {calendarEvent && (
+          <div className="mb-3.5 -mx-4 -mt-4 sm:-mx-5 sm:-mt-5 flex items-center justify-between rounded-t-3xl bg-gradient-to-r from-slate-50 via-indigo-50/50 to-slate-50 px-4 py-2.5 border-b border-slate-100 text-xs">
+            <div className="flex items-center gap-2">
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  calendarEvent.type === 'open'
+                    ? 'bg-emerald-500 live-beacon'
+                    : calendarEvent.type === 'close'
+                    ? 'bg-amber-500'
+                    : calendarEvent.type === 'allotment'
+                    ? 'bg-purple-500'
+                    : 'bg-indigo-500'
+                }`}
+              />
+              <span className="font-black text-slate-900 uppercase tracking-wider text-[11px] font-heading">
+                {calendarEvent.type === 'open'
+                  ? 'Bidding Opens'
+                  : calendarEvent.type === 'close'
+                  ? 'Closes Today'
+                  : calendarEvent.type === 'allotment'
+                  ? 'Allotment Declared'
+                  : 'Listing Day'}
+              </span>
+              <span className="text-slate-300">&bull;</span>
+              <span className="font-bold text-indigo-700">{calendarEvent.actionText}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 font-bold text-slate-700 text-[11px] tabular-nums bg-white px-2.5 py-1 rounded-lg border border-slate-200/90 shadow-2xs">
+              <Clock className="h-3 w-3 text-indigo-600" />
+              <span>{formatDate(calendarEvent.date)}</span>
+            </div>
+          </div>
+        )}
+
         {/* Top Header: Logo, Rank, Name, Category & Gain Pill */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0 flex-1">
