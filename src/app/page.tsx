@@ -25,7 +25,7 @@ import PwaInstallButton from '@/components/pwa/PwaInstallButton';
 
 export default function HomePage() {
   const [ipos, setIpos] = useState<IPO[]>([]);
-  const [activeTab, setActiveTab] = useState<'open' | 'upcoming' | 'closed'>('open');
+  const [activeTab, setActiveTab] = useState<'active' | 'allotment_listed' | 'upcoming' | 'all'>('active');
   const [selectedCategory, setSelectedCategory] = useState<'all' | IpoCategory>('all');
   const [searchFilter, setSearchFilter] = useState('');
   const [notifModalOpen, setNotifModalOpen] = useState(false);
@@ -37,12 +37,18 @@ export default function HomePage() {
     return () => window.removeEventListener('ipoDataUpdated', handleUpdate);
   }, []);
 
-  // Filter IPOs
+  // Filter IPOs by Active IPO / Allotment & listed / Upcoming / All
   const filteredIpos = ipos.filter((ipo) => {
-    const statusMatches =
-      activeTab === 'closed'
-        ? ipo.status === 'closed' || ipo.status === 'listed'
-        : ipo.status === activeTab;
+    let statusMatches = true;
+    if (activeTab === 'active') {
+      statusMatches = ipo.status === 'open';
+    } else if (activeTab === 'allotment_listed') {
+      statusMatches = ipo.status === 'closed' || ipo.status === 'listed';
+    } else if (activeTab === 'upcoming') {
+      statusMatches = ipo.status === 'upcoming';
+    } else if (activeTab === 'all') {
+      statusMatches = true;
+    }
 
     const categoryMatches =
       selectedCategory === 'all' || ipo.category === selectedCategory;
@@ -168,23 +174,41 @@ export default function HomePage() {
         {/* Navigation Tabs and Category Filters */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           
-          {/* Primary Status Tabs */}
+          {/* Primary Status Tabs: Active IPO / Allotment & listed / Upcoming / All */}
           <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200 overflow-x-auto scrollbar-none">
+            {/* 1. Active IPO */}
             <button
-              onClick={() => setActiveTab('open')}
+              onClick={() => setActiveTab('active')}
               className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === 'open'
+                activeTab === 'active'
                   ? 'bg-white text-indigo-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-              <span>Live Bidding</span>
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+              <span>Active IPO</span>
               <span className="rounded-full bg-indigo-50 px-1.5 py-0.2 text-[10px] text-indigo-700 font-extrabold">
                 {liveCount}
               </span>
             </button>
 
+            {/* 2. Allotment & listed */}
+            <button
+              onClick={() => setActiveTab('allotment_listed')}
+              className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === 'allotment_listed'
+                  ? 'bg-white text-indigo-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Allotment & listed</span>
+              <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
+                {listedCount}
+              </span>
+            </button>
+
+            {/* 3. Upcoming */}
             <button
               onClick={() => setActiveTab('upcoming')}
               className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
@@ -200,18 +224,18 @@ export default function HomePage() {
               </span>
             </button>
 
+            {/* 4. All */}
             <button
-              onClick={() => setActiveTab('closed')}
+              onClick={() => setActiveTab('all')}
               className={`shrink-0 flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === 'closed'
+                activeTab === 'all'
                   ? 'bg-white text-indigo-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Allotment & Listed</span>
+              <span>All</span>
               <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-700 font-bold">
-                {listedCount}
+                {ipos.length}
               </span>
             </button>
           </div>
@@ -269,7 +293,7 @@ export default function HomePage() {
             <p className="text-sm font-semibold">No IPOs found matching the current filters.</p>
             <button
               onClick={() => {
-                setActiveTab('open');
+                setActiveTab('active');
                 setSelectedCategory('all');
                 setSearchFilter('');
               }}

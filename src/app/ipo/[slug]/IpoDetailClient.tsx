@@ -25,13 +25,15 @@ import GmpCalculator from '@/components/tools/GmpCalculator';
 import AllotmentCheckerModal from '@/components/tools/AllotmentCheckerModal';
 import NotificationModal from '@/components/notifications/NotificationModal';
 import BrokerCtaBanner from '@/components/monetization/BrokerCtaBanner';
+import AllotmentChancesCalculator from '@/components/tools/AllotmentChancesCalculator';
 
 interface Props {
   initialIpo: IPO;
   slug: string;
 }
 
-type TabType = 'gmp' | 'subscription' | 'details' | 'allotment';
+type TabType = 'gmp' | 'subscription' | 'matrix' | 'details' | 'allotment';
+
 
 export default function IpoDetailClient({ initialIpo, slug }: Props) {
   const [ipo, setIpo] = useState<IPO>(initialIpo);
@@ -146,6 +148,17 @@ export default function IpoDetailClient({ initialIpo, slug }: Props) {
               </div>
             </div>
 
+            {/* Allotment Chances Calculator Trigger */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('matrix')}
+              className="flex items-center justify-center gap-1.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-4 py-4 text-xs font-extrabold text-indigo-700 transition cursor-pointer"
+              title="Calculate probability of getting allotment"
+            >
+              <Calculator className="h-4 w-4 text-indigo-600" />
+              <span>Allotment Chances</span>
+            </button>
+
             {/* Apply CTA */}
             <a
               href="https://zerodha.com/open-account?c=ZMPZQH"
@@ -188,11 +201,12 @@ export default function IpoDetailClient({ initialIpo, slug }: Props) {
         </div>
       </div>
 
-      {/* 4 Clean Navigation Tabs - Horizontal Touch Scrollable on Mobile */}
+      {/* Navigation Tabs - Horizontal Touch Scrollable on Mobile */}
       <div className="flex border-b border-slate-200 gap-2 pb-1 overflow-x-auto scrollbar-none">
         {[
           { key: 'gmp', label: `Live GMP (+₹${ipo.currentGmp})`, icon: TrendingUp },
           { key: 'subscription', label: `Subscription (${ipo.currentSubscription}x)`, icon: BarChart3 },
+          { key: 'matrix', label: 'Allotment Chances Calculator', icon: Calculator },
           { key: 'details', label: 'Company & Financials', icon: Layers },
           { key: 'allotment', label: 'Allotment Status', icon: CheckCircle2 },
         ].map((tab) => {
@@ -226,12 +240,21 @@ export default function IpoDetailClient({ initialIpo, slug }: Props) {
           </div>
         )}
 
-        {/* TAB 2: SUBSCRIPTION BREAKDOWN */}
+        {/* TAB 2: SUBSCRIPTION BREAKDOWN + MATRIX CALCULATOR */}
         {activeTab === 'subscription' && (
           <div className="space-y-6">
+            <AllotmentChancesCalculator ipo={ipo} />
             <SubscriptionTable ipo={ipo} />
           </div>
         )}
+
+        {/* TAB: ALLOTMENT CHANCES MATRIX CALCULATOR */}
+        {activeTab === 'matrix' && (
+          <div className="space-y-6">
+            <AllotmentChancesCalculator ipo={ipo} />
+          </div>
+        )}
+
 
         {/* TAB 3: DETAILS & FINANCIALS */}
         {activeTab === 'details' && (

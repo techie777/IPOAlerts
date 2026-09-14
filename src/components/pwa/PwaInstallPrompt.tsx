@@ -122,76 +122,59 @@ export default function PwaInstallPrompt() {
   return (
     <>
       {/* ------------------------------------------------------------- */}
-      {/* Floating Bottom Ambient Install Banner (Mobile & Desktop)     */}
+      {/* ------------------------------------------------------------- */}
+      {/* Short & Simple 1-Line Ambient Install Bar (Mobile & Desktop)   */}
       {/* ------------------------------------------------------------- */}
       {!isDismissed && !modalOpen && (
         <aside
           aria-label="Install IPO Alerts Progressive Web App"
-          className="fixed bottom-16 sm:bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300"
+          className="fixed bottom-16 sm:bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-2 duration-300"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-indigo-500/40 bg-slate-900/95 p-4 text-white shadow-2xl backdrop-blur-xl ring-1 ring-white/10">
-            {/* Top Accent Gradient Line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-emerald-400 to-amber-400" />
-
-            <div className="flex items-start gap-3.5">
-              {/* App Icon */}
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 shadow-md ring-2 ring-indigo-400/40">
+          <div className="flex items-center justify-between gap-2.5 rounded-2xl border border-indigo-500/40 bg-slate-900/95 px-3 py-2 text-white shadow-xl backdrop-blur-md ring-1 ring-white/10">
+            {/* App Icon + 1-Line Message */}
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 shadow-xs ring-1 ring-indigo-400/40">
                 <Image
                   src="/icons/icon-192x192.png"
                   alt="IPO Alerts"
-                  width={48}
-                  height={48}
+                  width={32}
+                  height={32}
                   className="h-full w-full object-cover"
                 />
               </div>
 
-              {/* Text & Value Proposition */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 ring-1 ring-emerald-500/40">
-                    <Zap className="h-3 w-3" /> No Heavy Files
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-white truncate">
+                  <span className="truncate">Install IPO Alerts</span>
+                  <span className="shrink-0 text-[10px] font-semibold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded">
+                    &lt;1MB
                   </span>
-                  <span className="text-[10px] text-slate-400">&bull; 1-Tap Add</span>
                 </div>
-
-                <h3 className="mt-1 text-sm font-bold text-white tracking-tight">
-                  Add IPO Alerts to Phone Screen
-                </h3>
-                <p className="mt-0.5 text-xs text-slate-300 leading-snug">
-                  Zero heavy downloads (<span className="text-emerald-300 font-semibold">&lt;1 MB</span>)! A single tap and the app is ready on your home screen with instant push alerts.
+                <p className="text-[10px] text-slate-300 truncate">
+                  No heavy download &bull; 1-tap add to screen
                 </p>
-
-                {/* Actions */}
-                <div className="mt-3 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleInstallClick}
-                    disabled={isInstalling}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-emerald-500 hover:from-indigo-600 hover:to-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-500/25 transition active:scale-95 cursor-pointer"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    <span>{canNativePrompt ? 'Add to Phone (1-Tap)' : 'Install App'}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(true)}
-                    className="inline-flex items-center gap-1 rounded-xl bg-white/10 hover:bg-white/15 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition"
-                  >
-                    <span>Benefits</span>
-                    <ArrowRight className="h-3 w-3 text-slate-400" />
-                  </button>
-                </div>
               </div>
+            </div>
 
-              {/* Close Button */}
+            {/* Actions: Install Now + Close */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                disabled={isInstalling}
+                className="inline-flex items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-emerald-500 hover:from-indigo-600 hover:to-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-500/25 transition active:scale-95 cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Install Now</span>
+              </button>
+
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="shrink-0 p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
                 aria-label="Dismiss banner"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
