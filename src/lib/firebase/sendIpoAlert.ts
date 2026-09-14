@@ -127,12 +127,19 @@ export async function sendIpoAlert(alert: IpoAlertPayload): Promise<SendIpoAlert
           body: alert.body,
         },
         webpush: {
+          headers: {
+            Urgency: 'high',
+            TTL: '86400',
+          },
           notification: {
             title: alert.title,
             body: alert.body,
             icon: iconUrl,
             badge: '/favicon.ico',
-            tag,
+            tag: `${tag}-${Date.now()}`,
+            requireInteraction: true,
+            renotify: true,
+            vibrate: [200, 100, 200],
             data: {
               url: destinationUrl,
               ...alert.customData,
@@ -142,12 +149,21 @@ export async function sendIpoAlert(alert: IpoAlertPayload): Promise<SendIpoAlert
             link: destinationUrl,
           },
         },
+        android: {
+          priority: 'high',
+          notification: {
+            priority: 'max',
+            defaultSound: true,
+            defaultVibrateTimings: true,
+          },
+        },
         data: {
           title: alert.title,
           body: alert.body,
           url: destinationUrl,
           category: alert.category || 'all',
           topic: alert.topic || 'general',
+          timestamp: Date.now().toString(),
           ...alert.customData,
         },
       });

@@ -33,7 +33,10 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_FIREBASE_API_KEY') 
         body: payload.notification?.body || payload.data?.body || 'New IPO update available.',
         icon: payload.notification?.icon || payload.data?.icon || '/favicon.ico',
         badge: '/favicon.ico',
-        tag: payload.data?.tag || 'ipo-alert-' + Date.now(),
+        tag: payload.data?.tag || ('ipo-alert-' + Date.now()),
+        renotify: true,
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
         data: {
           url: payload.data?.url || payload.notification?.click_action || '/',
           timestamp: Date.now(),
