@@ -16,7 +16,9 @@ import {
   LogOut,
   Sliders,
   ChevronDown,
+  ChevronRight,
   Download,
+  Globe,
 } from 'lucide-react';
 import { getStoredIpos } from '@/lib/ipoStore';
 import { IPO } from '@/types/ipo';
@@ -238,154 +240,253 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Language Switcher (EN | हिंदी) */}
-            <LanguageSwitcher />
+            {/* Language Switcher (Desktop only: hidden on mobile) */}
+            <LanguageSwitcher className="hidden md:inline-flex" />
 
             {/* PWA 1-Tap Install Button (Sleek Compact Pill on xl screens) */}
             <PwaInstallButton variant="navbar" />
 
+            {/* Desktop User Profile & Auth Dropdown (Desktop only: hidden on mobile) */}
+            <div className="hidden md:block">
+              {user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600 text-white font-extrabold text-[11px]">
+                      {user.name ? user.name[0].toUpperCase() : 'U'}
+                    </div>
+                    <span className="hidden sm:inline max-w-[90px] truncate">{user.name}</span>
+                    <ChevronDown className="h-3 w-3 text-slate-500 hidden sm:inline" />
+                  </button>
 
-            {/* User Profile & Auth Dropdown */}
-            {user ? (
-              <div className="relative" ref={dropdownRef}>
+                  {/* Dropdown Menu */}
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50 animate-fade-in text-xs">
+                      <div className="px-3 py-2 border-b border-slate-100">
+                        <div className="font-bold text-slate-900 truncate">{user.name}</div>
+                        <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                      </div>
+
+                      <div className="py-1 space-y-0.5">
+                        <Link
+                          href="/profile?tab=profile"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"
+                        >
+                          <User className="h-4 w-4 text-indigo-600" />
+                          <span>My Profile</span>
+                        </Link>
+
+                        <Link
+                          href="/profile?tab=notifications"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition font-semibold"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Bell className="h-4 w-4 text-indigo-600" />
+                            <span>My Notifications</span>
+                          </div>
+                          <span className="rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.2">
+                            Options
+                          </span>
+                        </Link>
+
+                        <Link
+                          href="/notifications"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"
+                        >
+                          <Sliders className="h-4 w-4 text-slate-500" />
+                          <span>Notification Feed</span>
+                        </Link>
+                      </div>
+
+                      <div className="pt-1 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition cursor-pointer font-semibold"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer"
+                  onClick={() => setAuthModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition"
                 >
-                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600 text-white font-extrabold text-[11px]">
-                    {user.name ? user.name[0].toUpperCase() : 'U'}
-                  </div>
-                  <span className="hidden sm:inline max-w-[90px] truncate">{user.name}</span>
-                  <ChevronDown className="h-3 w-3 text-slate-500 hidden sm:inline" />
+                  <User className="h-3.5 w-3.5" />
+                  <span>Sign In</span>
                 </button>
+              )}
+            </div>
 
-                {/* Dropdown Menu */}
-                {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50 animate-fade-in text-xs">
-                    <div className="px-3 py-2 border-b border-slate-100">
-                      <div className="font-bold text-slate-900 truncate">{user.name}</div>
-                      <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
-                    </div>
-
-                    <div className="py-1 space-y-0.5">
-                      <Link
-                        href="/profile?tab=profile"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"
-                      >
-                        <User className="h-4 w-4 text-indigo-600" />
-                        <span>My Profile</span>
-                      </Link>
-
-                      <Link
-                        href="/profile?tab=notifications"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition font-semibold"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <Bell className="h-4 w-4 text-indigo-600" />
-                          <span>My Notifications</span>
-                        </div>
-                        <span className="rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.2">
-                          Options
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/notifications"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"
-                      >
-                        <Sliders className="h-4 w-4 text-slate-500" />
-                        <span>Notification Feed</span>
-                      </Link>
-                    </div>
-
-                    <div className="pt-1 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition cursor-pointer font-semibold"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setAuthModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition"
-              >
-                <User className="h-3.5 w-3.5" />
-                <span>Sign In</span>
-              </button>
-            )}
-
-            {/* Mobile menu trigger */}
+            {/* Mobile Unified Menu Trigger (Merged Profile & Menu Option) */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700"
+              className="md:hidden flex items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer active:scale-95"
               aria-label="Toggle navigation menu"
             >
-              <Menu className="h-4 w-4" />
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5 text-slate-800" />
+              ) : user ? (
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600 text-white font-extrabold text-[11px] shadow-xs">
+                  {user.name ? user.name[0].toUpperCase() : 'U'}
+                </div>
+              ) : (
+                <Menu className="h-5 w-5 text-slate-800" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Mobile Slide-down Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 text-sm font-semibold text-slate-700 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span className="text-xs text-slate-400">Language / भाषा:</span>
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3.5 space-y-3 text-sm font-semibold text-slate-700 shadow-xl animate-in fade-in slide-in-from-top-2">
+            {/* 1. Language Switcher inside Menu */}
+            <div className="flex items-center justify-between py-2 px-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-indigo-600" />
+                <span className="text-xs font-bold text-slate-700">Language / भाषा:</span>
+              </div>
               <LanguageSwitcher />
             </div>
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 hover:text-indigo-600"
-            >
-              {t.allIpos}
-            </Link>
-            <Link
-              href="/gmp"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 hover:text-indigo-600"
-            >
-              {t.liveGmp} Tracker
-            </Link>
-            <Link
-              href="/subscription"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 hover:text-indigo-600"
-            >
-              {t.liveSubscription}
-            </Link>
-            <Link
-              href="/allotment"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 hover:text-indigo-600"
-            >
-              {t.allotmentStage}
-            </Link>
-            <Link
-              href="/notifications"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-1.5 text-indigo-600 font-bold"
-            >
-              <span>Notifications Feed</span>
-              {unreadCount > 0 && (
-                <span className="rounded-full bg-emerald-500 text-white text-[10px] px-2 py-0.5">
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
 
-            {/* 1-Tap PWA Mobile Add to Screen */}
+            {/* 2. User Account Section inside Menu */}
+            {user ? (
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100">
+                <Link
+                  href="/profile?tab=profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2.5 min-w-0"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-xs shrink-0">
+                    {user.name ? user.name[0].toUpperCase() : 'U'}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-slate-900 truncate">{user.name}</div>
+                    <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                  </div>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="shrink-0 text-[11px] font-bold text-rose-600 hover:text-rose-700 px-2.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200 cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setAuthModalOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+              >
+                <User className="h-4 w-4" />
+                <span>Sign In to Account</span>
+              </button>
+            )}
+
+            {/* 3. Primary Mobile Navigation Links */}
+            <div className="space-y-0.5 pt-1 border-t border-slate-100">
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition"
+              >
+                <span>{t.allIpos}</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
+              <Link
+                href="/gmp"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <span>{t.liveGmp}</span>
+                  <span className="flex h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
+              <Link
+                href="/subscription"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition"
+              >
+                <span>{t.subscription}</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
+              <Link
+                href="/allotment"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition"
+              >
+                <span>{t.allotment}</span>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
+              <Link
+                href="/calendar"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition"
+              >
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 text-slate-400" />
+                  <span>{t.calendar}</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
+              <Link
+                href="/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2 px-3 rounded-xl text-indigo-600 font-bold hover:bg-indigo-50/50 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  <span>Notifications Feed</span>
+                </div>
+                {unreadCount > 0 && (
+                  <span className="rounded-full bg-emerald-500 text-white text-[10px] px-2 py-0.5 font-bold">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+
+              {user && (
+                <Link
+                  href="/profile?tab=profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between py-2 px-3 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-slate-500" />
+                    <span>My Profile & Settings</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-slate-400" />
+                </Link>
+              )}
+            </div>
+
+            {/* 4. 1-Tap PWA Mobile Add to Screen */}
             <button
               type="button"
               onClick={() => {
@@ -396,7 +497,7 @@ export default function Navbar() {
                   window.dispatchEvent(new CustomEvent('openPwaInstallModal'));
                 }
               }}
-              className="flex items-center justify-between w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-50 to-emerald-50 hover:from-indigo-100 hover:to-emerald-100 text-indigo-950 font-bold border border-indigo-200/80 shadow-xs my-1 text-left"
+              className="flex items-center justify-between w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-indigo-50 to-emerald-50 hover:from-indigo-100 hover:to-emerald-100 text-indigo-950 font-bold border border-indigo-200/80 shadow-xs cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Download className="h-4 w-4 text-indigo-600" />
@@ -406,27 +507,6 @@ export default function Navbar() {
                 &lt;1MB
               </span>
             </button>
-
-            {user ? (
-              <Link
-                href="/profile?tab=notifications"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-indigo-600 font-bold"
-              >
-                My Profile & Notifications
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setAuthModalOpen(true);
-                }}
-                className="w-full text-left py-1.5 text-indigo-600 font-bold"
-              >
-                Sign In to Account
-              </button>
-            )}
           </div>
         )}
       </header>

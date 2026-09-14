@@ -7,6 +7,7 @@ import FirebaseAnalyticsInit from '@/components/analytics/FirebaseAnalyticsInit'
 import PwaRegistrar from '@/components/pwa/PwaRegistrar';
 import PwaInstallPrompt from '@/components/pwa/PwaInstallPrompt';
 import ScrollToTopButton from '@/components/layout/ScrollToTopButton';
+import FirstTimeLanguageModal from '@/components/layout/FirstTimeLanguageModal';
 import { LanguageProvider } from '@/context/LanguageContext';
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -66,6 +67,7 @@ export default function RootLayout({
     <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable}`}>
       <body className="min-h-full flex flex-col antialiased bg-[#f8fafc] text-slate-900 pb-16 sm:pb-0 font-sans">
         <LanguageProvider>
+          <FirstTimeLanguageModal />
           <PwaRegistrar />
           <PwaInstallPrompt />
           <ScrollToTopButton />
