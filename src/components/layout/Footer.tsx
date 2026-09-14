@@ -35,7 +35,7 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="mt-20 border-t border-slate-200 bg-white text-slate-500 text-xs">
+    <footer className="mt-20 border-t border-slate-200 bg-white text-slate-600 text-xs">
       {/* Statutory SEBI Disclaimer */}
       <div className="border-b border-slate-100 bg-amber-50/50 px-4 py-3.5 text-center">
         <div className="mx-auto max-w-5xl flex items-center justify-center gap-2 text-amber-900 font-medium text-xs">
@@ -158,7 +158,7 @@ export default function Footer() {
                 IPO<span className="text-indigo-600">Alerts</span>
               </span>
             </div>
-            <p className="text-slate-500 leading-relaxed max-w-sm text-xs">
+            <p className="text-slate-600 leading-relaxed max-w-sm text-xs font-medium">
               Real-time Indian IPO intelligence, live Grey Market Premium (GMP) tracker, subscription monitors, and automated allotment alerts.
             </p>
           </div>
@@ -290,7 +290,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-slate-100 pt-6 text-center text-slate-400 text-[11px]">
+        <div className="mt-8 border-t border-slate-100 pt-6 text-center text-slate-600 text-xs font-medium">
           <p>© {new Date().getFullYear()} IPOAlerts Platform. All rights reserved.</p>
           <p className="mt-1">
             Affiliate Disclosure: Some links on this site are referral links for brokers (Zerodha, Groww). We may receive compensation at zero additional cost to you.
