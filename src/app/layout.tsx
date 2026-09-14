@@ -14,14 +14,14 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '600', '700'],
 });
 
 const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-heading',
-  weight: ['500', '600', '700', '800', '900'],
+  weight: ['600', '700', '800'],
 });
 
 export const viewport: Viewport = {

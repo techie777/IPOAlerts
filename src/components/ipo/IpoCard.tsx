@@ -202,9 +202,9 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
             {/* IPO Name & Meta */}
             <div className="min-w-0 flex-1">
               <Link href={`/ipo/${ipo.slug}`} className="hover:underline">
-                <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                <h2 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
                   {ipo.name}
-                </h3>
+                </h2>
               </Link>
               
               <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px]">
@@ -241,14 +241,14 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
         {/* IPO Start Date & End Date Row */}
         <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50/80 px-3 py-1.5 text-xs text-slate-600 border border-slate-100">
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="text-slate-400 font-semibold text-[11px]">{t.offerDate}:</span>
+            <span className="text-slate-600 font-semibold text-[11px]">{t.offerDate}:</span>
             <span className="font-bold text-slate-800">
               {formatDate(ipo.openDate)} to {formatDate(ipo.closeDate)}
             </span>
           </div>
 
           {timeLeft && ipo.status === 'open' && (
-            <div className="flex items-center gap-1 text-[11px] font-bold text-indigo-600">
+            <div className="flex items-center gap-1 text-[11px] font-bold text-indigo-700">
               <Clock className="h-3 w-3" />
               <span>{timeLeft}</span>
             </div>
@@ -259,23 +259,23 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
         <div className="mt-3 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-2.5 text-center shadow-2xs">
           {/* Issue Price */}
           <div className="px-1.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
               {t.issuePrice}
             </div>
             <div className="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900">
               ₹{capPrice}
             </div>
-            <div className="text-[10px] text-slate-500 font-medium">
+            <div className="text-[10px] text-slate-600 font-medium">
               Lot: {ipo.lotSize} sh
             </div>
           </div>
 
           {/* GMP Today */}
           <div className="px-1.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
               {t.gmpToday}
             </div>
-            <div className="mt-0.5 text-sm sm:text-base font-extrabold text-emerald-600">
+            <div className="mt-0.5 text-sm sm:text-base font-extrabold text-emerald-700">
               {isGain ? `+₹${ipo.currentGmp}` : `-₹${Math.abs(ipo.currentGmp)}`}
             </div>
             <div className="text-[10px] text-emerald-800 font-medium">
@@ -285,13 +285,13 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
 
           {/* Profit / Lot */}
           <div className="px-1.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
               {t.profitLot}
             </div>
             <div className="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900">
               +{formatCurrency(lotProfit)}
             </div>
-            <div className="text-[10px] text-slate-500 font-medium">
+            <div className="text-[10px] text-slate-600 font-medium">
               {t.oneApplication}
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
             <span className="flex items-center gap-1 text-indigo-700">
               <Users className="h-3.5 w-3.5" /> {t.liveSubscription}
             </span>
-            <span className="text-slate-500 font-semibold">
+            <span className="text-slate-600 font-semibold">
               {t.total}: <strong className="text-indigo-700 font-extrabold">{totalSub}</strong>
             </span>
           </div>
@@ -311,7 +311,7 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
           <div className="grid grid-cols-4 gap-1 text-center text-xs">
             {/* Retail */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.retail}</div>
+              <div className="text-[9px] font-bold text-slate-600 uppercase">{t.retail}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {retailSub}
               </div>
@@ -319,7 +319,7 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
 
             {/* HNI */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.hni}</div>
+              <div className="text-[9px] font-bold text-slate-600 uppercase">{t.hni}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {hniSub}
               </div>
@@ -327,7 +327,7 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
 
             {/* QIB */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.qib}</div>
+              <div className="text-[9px] font-bold text-slate-600 uppercase">{t.qib}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {qibSub}
               </div>
@@ -335,7 +335,7 @@ export default function IpoCard({ ipo, rank, calendarEvent }: Props) {
 
             {/* Employee */}
             <div className="rounded-xl bg-white p-1.5 border border-slate-100 shadow-2xs">
-              <div className="text-[9px] font-bold text-slate-400 uppercase">{t.employee}</div>
+              <div className="text-[9px] font-bold text-slate-600 uppercase">{t.employee}</div>
               <div className="mt-0.5 text-xs font-extrabold text-slate-800 truncate">
                 {empSub}
               </div>

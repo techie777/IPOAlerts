@@ -81,7 +81,7 @@ export default function HomePage() {
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
               {t.homeTitle}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 mt-0.5 max-w-2xl font-medium">
               {t.homeSubtitle}
             </p>
           </div>
@@ -92,7 +92,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2.5 rounded-2xl bg-white border border-slate-200/90 px-3.5 py-2 shadow-2xs shrink-0">
               <span className="h-2 w-2 rounded-full bg-emerald-500 live-beacon" />
               <div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{t.openBidding}</div>
+                <div className="text-[10px] uppercase font-bold text-slate-600">{t.openBidding}</div>
                 <div className="text-xs sm:text-sm font-extrabold text-slate-900">{liveCount} Issues</div>
               </div>
             </div>

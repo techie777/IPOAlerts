@@ -104,6 +104,8 @@ h1, h2, h3, h4, .font-heading {
   display: flex;
   width: max-content;
   animation: ticker-slide 45s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .animate-ticker:hover {
